@@ -410,7 +410,8 @@
         fd.append('email', email);
         fd.append('password', password);
 
-        const res  = await fetch('/utcomexagro/api/auth/login.php', {
+        const basePath = window.location.pathname.includes('/utcomexagro') ? '/utcomexagro/api' : '/api';
+        const res  = await fetch(`${basePath}/auth/login.php`, {
           method: 'POST', body: fd
         });
         const json = await res.json();

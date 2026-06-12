@@ -4,7 +4,7 @@
 // ============================================================
 
 const API = (() => {
-  const BASE = '/utcomexagro/api';
+  const BASE = window.location.pathname.includes('/utcomexagro') ? '/utcomexagro/api' : '/api';
 
   /**
    * Fetch autenticado: agrega Authorization header con JWT.

@@ -11,6 +11,8 @@ const Auth = (() => {
     lastAct: 'utca_last_activity',
   };
 
+  const APP_PATH = window.location.pathname.includes('/utcomexagro') ? '/utcomexagro' : '';
+
   // Tiempos (en ms)
   const INACTIVITY_LIMIT = 30 * 60 * 1000;   // 30 min
   const WARN_BEFORE      = 2  * 60 * 1000;    // avisar 2 min antes
@@ -78,7 +80,7 @@ const Auth = (() => {
     try {
       const fd = new FormData();
       fd.append('refresh_token', rt);
-      const res  = await fetch('/utcomexagro/api/auth/refresh.php', { method:'POST', body:fd });
+      const res  = await fetch(`${APP_PATH}/api/auth/refresh.php`, { method:'POST', body:fd });
       const json = await res.json();
       if (json.success) {
         sessionStorage.setItem(KEYS.token, json.data.access_token);
@@ -107,7 +109,7 @@ const Auth = (() => {
     const fd = new FormData();
     fd.append('email', email);
     fd.append('password', password);
-    const res  = await fetch('/utcomexagro/api/auth/login.php', { method:'POST', body:fd });
+    const res  = await fetch(`${APP_PATH}/api/auth/login.php`, { method:'POST', body:fd });
     const json = await res.json();
     if (json.success) {
       save(json.data.access_token, json.data.refresh_token, json.data.user);
@@ -125,7 +127,7 @@ const Auth = (() => {
       try {
         const fd = new FormData();
         fd.append('refresh_token', rt);
-        await fetch('/utcomexagro/api/auth/logout.php', { method:'POST', body:fd });
+        await fetch(`${APP_PATH}/api/auth/logout.php`, { method:'POST', body:fd });
       } catch { /* silencioso */ }
     }
     clear();
@@ -134,7 +136,7 @@ const Auth = (() => {
       : reason === 'token_expirado'
       ? '?reason=sesion_expirada'
       : '';
-    window.location.href = '/utcomexagro/login.html' + msg;
+    window.location.href = APP_PATH + '/login.html' + msg;
   };
 
   // ---- Verificar permisos ----
