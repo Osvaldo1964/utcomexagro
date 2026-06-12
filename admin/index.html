@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo – UT COMEXAGRO</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ============================================================
+       SIDEBAR
+       ============================================================ -->
+  <aside id="sidebar">
+
+    <!-- Header / Logo -->
+    <div class="sidebar-header">
+      <div class="sidebar-logo-icon">🌿</div>
+      <div class="sidebar-logo-text">
+        <div class="sidebar-brand">UT COMEXAGRO</div>
+        <div class="sidebar-sub">Panel Administrativo</div>
+      </div>
+      <div class="sidebar-toggle" id="sidebar-toggle" title="Colapsar menú">‹</div>
+    </div>
+
+    <!-- Usuario actual -->
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar-initial">A</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-user-name">Cargando...</div>
+        <div class="sidebar-user-rol"  id="sidebar-user-rol">–</div>
+      </div>
+    </div>
+
+    <!-- Navegación dinámica (renderizada por app.js) -->
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+
+    <!-- Logout -->
+    <div class="sidebar-footer">
+      <div class="sidebar-logout" id="btn-logout">
+        <span>🚪</span>
+        <span>Cerrar sesión</span>
+      </div>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+  <!-- ============================================================
+       ÁREA PRINCIPAL
+       ============================================================ -->
+  <div id="main-area">
+
+    <!-- Top bar -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <!-- Hamburguesa móvil -->
+        <div class="topbar-hamburger" id="topbar-hamburger">
+          <span></span><span></span><span></span>
+        </div>
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Navegación">
+          <span>🏠</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-current" id="breadcrumb-current">Dashboard</span>
+        </nav>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Reloj -->
+        <span class="topbar-time" id="topbar-time">00:00</span>
+
+        <!-- Notificaciones -->
+        <div class="topbar-notif" title="Notificaciones">
+          🔔
+          <div class="notif-badge"></div>
+        </div>
+
+        <!-- Avatar / usuario -->
+        <div class="topbar-avatar-btn" title="Mi cuenta">
+          <div class="topbar-avatar" id="topbar-avatar-initial">A</div>
+          <div>
+            <div class="topbar-uname" id="topbar-user-name">...</div>
+            <div class="topbar-rol"   id="topbar-user-rol">...</div>
+          </div>
+        </div>
+      </div>
+    </header><!-- /topbar -->
+
+    <!-- Contenido dinámico -->
+    <main id="content" role="main">
+      <!-- Cargando... -->
+      <div style="padding:3rem;text-align:center;color:var(--gray-400)">
+        <div style="font-size:2rem;margin-bottom:.5rem">🌿</div>
+        Cargando panel...
+      </div>
+    </main>
+
+  </div><!-- /main-area -->
+
+</div><!-- /app-shell -->
+
+<!-- Scripts – orden importante -->
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
