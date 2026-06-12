@@ -84,9 +84,26 @@ const API = (() => {
     permisos: ()       => get('/config/permisos.php'),
   };
 
+  const beneficiarios = {
+    organizaciones: {
+      list:   ()   => get('/beneficiarios/organizaciones.php'),
+      create: (fd) => post('/beneficiarios/organizaciones.php', fd),
+    },
+    beneficiarios: {
+      list:   ()   => get('/beneficiarios/beneficiarios.php'),
+      create: (fd) => post('/beneficiarios/beneficiarios.php', fd),
+    },
+    tipos: {
+      list:   ()       => get('/beneficiarios/tipos.php'),
+      create: (fd)     => post('/beneficiarios/tipos.php', fd),
+      update: (id, fd) => post(`/beneficiarios/tipos.php?id=${id}`, fd),
+      delete: (id)     => request(`/beneficiarios/tipos.php?id=${id}`, { method: 'DELETE' }),
+    }
+  };
+
   const dashboard = {
     stats: () => get('/dashboard/stats.php'),
   };
 
-  return { request, get, post, put, del, postulados, configuracion, dashboard };
+  return { request, get, post, put, del, postulados, configuracion, beneficiarios, dashboard };
 })();

@@ -297,11 +297,27 @@ CREATE TABLE pqrs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================
--- MÓDULO: BENEFICIARIOS (estructura base – por definir)
+-- MÓDULO: BENEFICIARIOS Y ORGANIZACIONES
 -- ============================================================
+
+CREATE TABLE organizaciones (
+  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nit             VARCHAR(30) NOT NULL UNIQUE,
+  nombre          VARCHAR(150) NOT NULL,
+  rep_legal       VARCHAR(150),
+  direccion       VARCHAR(200),
+  telefono        VARCHAR(25),
+  email           VARCHAR(150),
+  departamento    VARCHAR(80),
+  municipio       VARCHAR(100),
+  max_beneficiarios INT UNSIGNED DEFAULT 0,
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE beneficiarios (
   id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  organizacion_id INT UNSIGNED,
   tipo_doc        ENUM('CC','CE','TI','Pasaporte') NOT NULL,
   num_doc         VARCHAR(30) NOT NULL UNIQUE,
   p_apellido      VARCHAR(60) NOT NULL,
@@ -315,7 +331,8 @@ CREATE TABLE beneficiarios (
   programa_id     INT UNSIGNED,
   estado          ENUM('activo','inactivo') DEFAULT 'activo',
   created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (programa_id) REFERENCES programas(id) ON DELETE SET NULL
+  FOREIGN KEY (programa_id) REFERENCES programas(id) ON DELETE SET NULL,
+  FOREIGN KEY (organizacion_id) REFERENCES organizaciones(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================================

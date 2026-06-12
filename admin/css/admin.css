@@ -296,6 +296,15 @@ img { max-width: 100%; display: block; }
   font-size: .85rem; color: var(--gray-400);
 }
 .breadcrumb-sep { font-size: .7rem; }
+.breadcrumb-item {
+  color: var(--gray-500);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--t-fast);
+}
+.breadcrumb-item:hover {
+  color: var(--green-600);
+}
 .breadcrumb-current { color: var(--gray-700); font-weight: 600; }
 .topbar-right {
   display: flex; align-items: center; gap: 1rem;
