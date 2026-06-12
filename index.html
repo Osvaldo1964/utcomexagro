@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UT COMEXAGRO – Desarrollo Agrícola y Capacitación Nacional</title>
+  <meta name="description" content="Unión Temporal COMEXAGRO: impulsando el desarrollo agrícola, asistencia técnica y capacitación a nivel nacional. Regístrate como postulado o radica tu PQR.">
+  <meta name="keywords" content="COMEXAGRO, agricultura Colombia, asistencia técnica, capacitación rural, postulados, agro">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="UT COMEXAGRO – Desarrollo Agrícola">
+  <meta property="og:description" content="Convocatoria nacional de empleo agrícola. Únete a nuestro equipo.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    /* Toast notifications */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      display: flex; align-items: center; gap: .75rem;
+      padding: .875rem 1.5rem;
+      background: #1F2937; color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+      font-size: .9rem; font-weight: 500;
+      transform: translateY(80px); opacity: 0;
+      transition: all .4s cubic-bezier(.34,1.56,.64,1);
+      max-width: 360px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { border-left: 4px solid #22C55E; }
+    .toast-error   { border-left: 4px solid #DC2626; }
+    .toast-info    { border-left: 4px solid #3B82F6; }
+    .toast-icon    { font-size: 1.1rem; }
+
+    /* Animaciones de entrada */
+    [data-anim] { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    [data-anim].anim-in { opacity: 1; transform: translateY(0); }
+    [data-anim-delay="1"] { transition-delay: .1s; }
+    [data-anim-delay="2"] { transition-delay: .2s; }
+    [data-anim-delay="3"] { transition-delay: .3s; }
+    [data-anim-delay="4"] { transition-delay: .4s; }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     NAVBAR
+     ================================================================ -->
+<nav id="navbar" class="scrolled">
+  <div class="nav-inner">
+
+    <!-- Logo / Marca -->
+    <a href="#inicio" class="nav-brand">
+      <div class="nav-brand-icon">🌿</div>
+      <div>
+        <div class="nav-brand-name">UT COMEXAGRO</div>
+        <div class="nav-brand-sub">Desarrollo Agrícola Nacional</div>
+      </div>
+    </a>
+
+    <!-- Links de navegación -->
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#convocatoria">Convocatoria</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+
+    <!-- Acciones -->
+    <div class="nav-actions">
+      <a href="login.html" class="btn-nav-login" id="nav-login-btn">
+        🔐 Acceder al Sistema
+      </a>
+      <!-- Hamburguesa -->
+      <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ================================================================
+     HERO
+     ================================================================ -->
+<section id="inicio">
+  <div class="hero-particles"></div>
+  <div id="hero">
+    <div class="hero-inner">
+
+      <!-- Contenido izquierdo -->
+      <div class="hero-content">
+        <div class="hero-badge">🌱 Convocatoria Abierta 2024</div>
+        <h1 class="hero-title">
+          Unión Temporal<br>
+          <span>COMEXAGRO</span>
+        </h1>
+        <p class="hero-desc">
+          Impulsamos el desarrollo agrícola y la capacitación técnica a nivel
+          nacional. Buscamos <strong>200 profesionales</strong> comprometidos
+          con el campo colombiano.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="openModal('overlay-postulados')" id="btn-hero-postulado">
+            👤 Registrarme como Postulado
+          </button>
+          <button class="btn-secondary" onclick="openModal('overlay-pqr')" id="btn-hero-pqr">
+            📋 Radicar PQR
+          </button>
+          <a href="login.html" class="btn-outline" id="btn-hero-sistema">
+            🔐 Sistema Administrativo
+          </a>
+        </div>
+      </div>
+
+      <!-- Panel de estadísticas -->
+      <div class="hero-visual">
+        <div class="hero-card-grid">
+          <div class="hero-stat-card accent">
+            <span class="hero-stat-number" data-counter="200" data-suffix="+">0</span>
+            <span class="hero-stat-label">Empleos Disponibles</span>
+          </div>
+          <div class="hero-stat-card">
+            <span class="hero-stat-number" data-counter="33" data-suffix="">0</span>
+            <span class="hero-stat-label">Departamentos</span>
+          </div>
+          <div class="hero-stat-card">
+            <span class="hero-stat-number" data-counter="4" data-suffix="">0</span>
+            <span class="hero-stat-label">Programas Activos</span>
+          </div>
+          <div class="hero-stat-card accent">
+            <span class="hero-stat-number" data-counter="2024" data-suffix="">0</span>
+            <span class="hero-stat-label">Convocatoria</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hero-inner -->
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll">
+      <div class="hero-scroll-arrow"></div>
+      Scroll
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     NOSOTROS
+     ================================================================ -->
+<section id="nosotros">
+  <div class="container">
+    <div class="about-inner">
+
+      <!-- Texto -->
+      <div data-anim>
+        <p class="about-label">¿Quiénes Somos?</p>
+        <h2 class="about-title">
+          Comprometidos con el<br>
+          <strong>Desarrollo del Campo</strong><br>Colombiano
+        </h2>
+        <p class="about-text">
+          UT COMEXAGRO es una Unión Temporal especializada en la implementación
+          de programas de desarrollo agrícola, asistencia técnica y capacitación
+          rural en todo el territorio nacional. Trabajamos de la mano con
+          comunidades, productores y entidades para transformar el campo colombiano.
+        </p>
+        <p class="about-text">
+          Nuestro equipo multidisciplinario garantiza la calidad en cada programa,
+          desde la planeación hasta la ejecución, con enfoque diferencial y respeto
+          por las comunidades rurales.
+        </p>
+        <div class="about-features">
+          <div class="about-feature">
+            <div class="about-feature-icon">🌿</div>
+            Asistencia técnica agrícola certificada
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">📚</div>
+            Programas de capacitación con enfoque práctico
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">🤝</div>
+            Trabajo directo con comunidades rurales
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">🗺️</div>
+            Cobertura en los 32 departamentos del país
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="about-stats" data-anim data-anim-delay="2">
+        <div class="stat-card highlight">
+          <span class="stat-value" data-counter="200" data-suffix="+">200+</span>
+          <span class="stat-label">Empleos directos</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" data-counter="33" data-suffix="">33</span>
+          <span class="stat-label">Departamentos</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" data-counter="4" data-suffix="">4</span>
+          <span class="stat-label">Programas activos</span>
+        </div>
+        <div class="stat-card highlight">
+          <span class="stat-value" data-counter="100" data-suffix="%">100%</span>
+          <span class="stat-label">Compromiso social</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SERVICIOS
+     ================================================================ -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-header" data-anim>
+      <span class="section-label">Lo que hacemos</span>
+      <h2 class="section-title">Nuestras Líneas de Trabajo</h2>
+      <p class="section-desc">
+        Desarrollamos programas integrales que impactan positivamente
+        las comunidades rurales de Colombia.
+      </p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card" data-anim data-anim-delay="1">
+        <div class="service-icon">🌱</div>
+        <h3 class="service-name">Asistencia Técnica Agrícola</h3>
+        <p class="service-desc">
+          Acompañamiento directo a productores con visitas técnicas, diagnóstico
+          de cultivos y transferencia de tecnología agrícola sostenible.
+        </p>
+      </div>
+      <div class="service-card" data-anim data-anim-delay="2">
+        <div class="service-icon">📖</div>
+        <h3 class="service-name">Capacitación Técnica Rural</h3>
+        <p class="service-desc">
+          Formación técnica y tecnológica para comunidades rurales en buenas
+          prácticas agrícolas, agroecología y gestión del campo.
+        </p>
+      </div>
+      <div class="service-card" data-anim data-anim-delay="3">
+        <div class="service-icon">🛒</div>
+        <h3 class="service-name">Comercialización Agropecuaria</h3>
+        <p class="service-desc">
+          Apoyo en la articulación de productores con mercados locales,
+          regionales y nacionales para mejorar sus ingresos.
+        </p>
+      </div>
+      <div class="service-card" data-anim data-anim-delay="4">
+        <div class="service-icon">🔬</div>
+        <h3 class="service-name">Investigación y Extensión</h3>
+        <p class="service-desc">
+          Desarrollo de investigaciones aplicadas y procesos de extensión
+          rural para innovar en el sector agropecuario colombiano.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CONVOCATORIA / CTAs
+     ================================================================ -->
+<section id="convocatoria">
+  <div class="container">
+    <div class="conv-inner" data-anim>
+      <span class="section-label" style="color:var(--amber-300)">Convocatoria 2024</span>
+      <h2 class="conv-title">
+        ¿Quieres hacer parte de<br>
+        <span>UT COMEXAGRO</span>?
+      </h2>
+      <p class="conv-desc">
+        Buscamos profesionales, técnicos y promotores comprometidos con
+        el desarrollo del campo colombiano. ¡Postúlate ahora!
+      </p>
+    </div>
+
+    <div class="cta-cards">
+
+      <!-- Registro de Postulados -->
+      <div class="cta-card green-card" onclick="openModal('overlay-postulados')" id="cta-postulados" role="button" tabindex="0"
+           onkeypress="if(event.key==='Enter') openModal('overlay-postulados')">
+        <div class="cta-card-icon">👤</div>
+        <h3 class="cta-card-title">Registro de Postulados</h3>
+        <p class="cta-card-desc">
+          Diligencia tu información personal, académica y adjunta los documentos
+          requeridos para participar en nuestra convocatoria.
+        </p>
+        <button class="cta-card-btn">Postularme ahora →</button>
+      </div>
+
+      <!-- Radicar PQR -->
+      <div class="cta-card amber-card" onclick="openModal('overlay-pqr')" id="cta-pqr" role="button" tabindex="0"
+           onkeypress="if(event.key==='Enter') openModal('overlay-pqr')">
+        <div class="cta-card-icon">📋</div>
+        <h3 class="cta-card-title">Radicar PQR</h3>
+        <p class="cta-card-desc">
+          ¿Tienes una Petición, Queja, Reclamo o Sugerencia? Comunícate
+          con nosotros de manera formal y recibirás respuesta oportuna.
+        </p>
+        <button class="cta-card-btn">Radicar ahora →</button>
+      </div>
+
+      <!-- Sistema Admin -->
+      <div class="cta-card blue-card" onclick="location.href='login.html'" id="cta-sistema" role="button" tabindex="0">
+        <div class="cta-card-icon">🔐</div>
+        <h3 class="cta-card-title">Sistema Administrativo</h3>
+        <p class="cta-card-desc">
+          Acceso exclusivo para personal autorizado de UT COMEXAGRO al
+          sistema de gestión interna y administrativo.
+        </p>
+        <button class="cta-card-btn">Acceder →</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CONTACTO
+     ================================================================ -->
+<section id="contacto" style="padding:5rem 0; background:var(--clr-gray-50);">
+  <div class="container">
+    <div class="section-header" data-anim>
+      <span class="section-label">Contáctanos</span>
+      <h2 class="section-title">¿Tienes preguntas?</h2>
+      <p class="section-desc">Estamos disponibles para atenderte en horario de oficina.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; margin-top:3rem;">
+      <div class="service-card" style="text-align:center;">
+        <div class="service-icon" style="margin:0 auto 1rem;">📧</div>
+        <h3 class="service-name">Email</h3>
+        <p class="service-desc"><a href="mailto:info@utcomexagro.com" style="color:var(--clr-primary)">info@utcomexagro.com</a></p>
+      </div>
+      <div class="service-card" style="text-align:center;">
+        <div class="service-icon" style="margin:0 auto 1rem;">📞</div>
+        <h3 class="service-name">Teléfono</h3>
+        <p class="service-desc">+57 (601) 000-0000<br>Lun – Vie: 8am – 5pm</p>
+      </div>
+      <div class="service-card" style="text-align:center;">
+        <div class="service-icon" style="margin:0 auto 1rem;">📍</div>
+        <h3 class="service-name">Sede Principal</h3>
+        <p class="service-desc">Bogotá D.C., Colombia<br>Zona de cobertura nacional</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">🌿</div>
+          <div class="footer-logo-name">UT COMEXAGRO</div>
+        </div>
+        <p class="footer-brand-desc">
+          Unión Temporal dedicada al desarrollo agrícola, asistencia técnica
+          y capacitación rural en todo el territorio colombiano.
+        </p>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Menú</p>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#convocatoria">Convocatoria</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Acciones</p>
+        <ul>
+          <li><a href="#" onclick="openModal('overlay-postulados')">Registro Postulados</a></li>
+          <li><a href="#" onclick="openModal('overlay-pqr')">Radicar PQR</a></li>
+          <li><a href="login.html">Sistema Admin</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">Programas</p>
+        <ul>
+          <li><a href="#">Asistencia Técnica</a></li>
+          <li><a href="#">Capacitación Rural</a></li>
+          <li><a href="#">Comercialización</a></li>
+          <li><a href="#">Investigación</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2024 UT COMEXAGRO – Todos los derechos reservados</span>
+      <span class="footer-copy">Desarrollado con 💚 para el campo colombiano</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================================
+     MODAL: REGISTRO DE POSTULADOS
+     ================================================================ -->
+<div class="modal-overlay" id="overlay-postulados" role="dialog" aria-modal="true" aria-label="Registro de Postulados">
+  <div class="modal modal-lg">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-header-icon">👤</div>
+        <div>
+          <div class="modal-title">Registro de Postulados</div>
+          <div class="modal-subtitle">Convocatoria UT COMEXAGRO 2024 – Complete todos los campos requeridos</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('overlay-postulados'); resetPostuladosModal();" aria-label="Cerrar">✕</button>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="modal-progress">
+      <div class="modal-progress-bar" id="modal-progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- Navegación de pasos -->
+    <div class="stepper-nav">
+      <div class="step-item active" id="step-nav-1" onclick="goToStep(1)">
+        <div class="step-bubble">1</div>
+        <span class="step-label">Programa</span>
+      </div>
+      <div class="step-item" id="step-nav-2" onclick="goToStep(2)">
+        <div class="step-bubble">2</div>
+        <span class="step-label">Datos Personales</span>
+      </div>
+      <div class="step-item" id="step-nav-3" onclick="goToStep(3)">
+        <div class="step-bubble">3</div>
+        <span class="step-label">Dotación / Salud</span>
+      </div>
+      <div class="step-item" id="step-nav-4" onclick="goToStep(4)">
+        <div class="step-bubble">4</div>
+        <span class="step-label">Ubicación</span>
+      </div>
+      <div class="step-item" id="step-nav-5" onclick="goToStep(5)">
+        <div class="step-bubble">5</div>
+        <span class="step-label">Documentos</span>
+      </div>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="modal-body">
+
+      <!-- Estado de éxito -->
+      <div class="success-state" id="success-postulado">
+        <div class="success-icon">✅</div>
+        <h3 class="success-title">¡Registro Exitoso!</h3>
+        <p class="success-desc">
+          Tu postulación ha sido recibida correctamente.
+          <br><strong class="success-name"></strong> – Doc: <span class="success-doc"></span>
+          <br>Nos pondremos en contacto a través del email o teléfono registrado.
+        </p>
+        <button class="btn-primary" onclick="closeModal('overlay-postulados'); resetPostuladosModal();">
+          Cerrar
+        </button>
+      </div>
+
+      <!-- Formulario multipaso -->
+      <form id="form-postulados" enctype="multipart/form-data" novalidate>
+
+        <!-- ==================== PASO 1: Programa y Rol ==================== -->
+        <div class="step-panel active" id="step-panel-1">
+          <p class="step-section-title">🎯 Selección de Programa y Cargo</p>
+          <div class="alert alert-info">
+            Seleccione el programa al cual desea postularse y el cargo que aspira a ocupar.
+            Revise bien el perfil requerido antes de continuar.
+          </div>
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label class="form-label" for="programa_id">
+                Programa <span class="required">*</span>
+              </label>
+              <select class="form-control" id="programa_id" name="programa_id" required>
+                <option value="">-- Seleccione un programa --</option>
+              </select>
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label" for="cargo_id">
+                Cargo / Perfil al que Aspira <span class="required">*</span>
+              </label>
+              <select class="form-control" id="cargo_id" name="cargo_id" required>
+                <option value="">-- Primero seleccione un programa --</option>
+              </select>
+            </div>
+          </div>
+          <div class="alert alert-warning" style="margin-top:1.25rem">
+            📌 <strong>Nota:</strong> Solo puede registrarse una vez por número de documento.
+            Asegúrese de completar toda la información con datos verídicos.
+          </div>
+        </div>
+
+        <!-- ==================== PASO 2: Datos Personales ==================== -->
+        <div class="step-panel" id="step-panel-2">
+          <p class="step-section-title">🪪 Información Personal</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="tipo_doc">Tipo de Documento <span class="required">*</span></label>
+              <select class="form-control" id="tipo_doc" name="tipo_doc" required>
+                <option value="">Seleccione</option>
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="TI">Tarjeta de Identidad</option>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="PEP">PEP (Permiso Especial)</option>
+                <option value="PPT">PPT</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="num_doc">Número de Documento <span class="required">*</span></label>
+              <input type="text" class="form-control" id="num_doc" name="num_doc"
+                     placeholder="Ej: 1234567890" required maxlength="20">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="p_apellido">Primer Apellido <span class="required">*</span></label>
+              <input type="text" class="form-control" id="p_apellido" name="p_apellido" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="s_apellido">Segundo Apellido</label>
+              <input type="text" class="form-control" id="s_apellido" name="s_apellido">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="p_nombre">Primer Nombre <span class="required">*</span></label>
+              <input type="text" class="form-control" id="p_nombre" name="p_nombre" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="s_nombre">Segundo Nombre</label>
+              <input type="text" class="form-control" id="s_nombre" name="s_nombre">
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label" for="direccion">Dirección de Residencia</label>
+              <input type="text" class="form-control" id="direccion" name="direccion"
+                     placeholder="Ej: Cra 15 # 45-23, Apto 301">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Correo Electrónico</label>
+              <input type="email" class="form-control" id="email" name="email"
+                     placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="telefono">Teléfono / Celular</label>
+              <input type="tel" class="form-control" id="telefono" name="telefono"
+                     placeholder="Ej: 3001234567">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sexo">Sexo</label>
+              <select class="form-control" id="sexo" name="sexo">
+                <option value="">Seleccione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+                <option value="No informa">Prefiero no decir</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="rh">Grupo Sanguíneo (RH)</label>
+              <select class="form-control" id="rh" name="rh">
+                <option value="">Seleccione</option>
+                <option>O+</option><option>O-</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
+              <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento"
+                     max="2006-01-01">
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 3: Dotación y Seguridad Social ==================== -->
+        <div class="step-panel" id="step-panel-3">
+          <p class="step-section-title">👕 Información para Dotación</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="talla_camisa">Talla de Camisa</label>
+              <select class="form-control" id="talla_camisa" name="talla_camisa">
+                <option value="">Seleccione</option>
+                <option value="XS">XS</option><option value="S">S</option>
+                <option value="M">M</option><option value="L">L</option>
+                <option value="XL">XL</option><option value="XXL">XXL</option>
+                <option value="XXXL">XXXL</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="talla_pantalon">Talla de Pantalón</label>
+              <input type="text" class="form-control" id="talla_pantalon" name="talla_pantalon"
+                     placeholder="Ej: 30, 32, 34, M, L">
+            </div>
+          </div>
+
+          <p class="step-section-title" style="margin-top:1.75rem">🏥 Seguridad Social</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="eps">Entidad de Salud (EPS)</label>
+              <input type="text" class="form-control" id="eps" name="eps"
+                     placeholder="Ej: Sura, Sanitas, Compensar...">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="afp">Fondo de Pensión (AFP)</label>
+              <input type="text" class="form-control" id="afp" name="afp"
+                     placeholder="Ej: Colpensiones, Protección...">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="arl">Administradora de Riesgos (ARL)</label>
+              <input type="text" class="form-control" id="arl" name="arl"
+                     placeholder="Ej: Sura, Colmena, Positiva...">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="discapacidad">¿Tiene alguna discapacidad?</label>
+              <input type="text" class="form-control" id="discapacidad" name="discapacidad"
+                     placeholder="Describa brevemente o escriba No">
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 4: Origen y Ubicación ==================== -->
+        <div class="step-panel" id="step-panel-4">
+          <p class="step-section-title">📍 Origen y Ubicación Actual</p>
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label class="form-label" for="pais_origen">País de Origen</label>
+              <input type="text" class="form-control" id="pais_origen" name="pais_origen"
+                     value="Colombia" placeholder="Ej: Colombia">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="departamento">Departamento de Residencia</label>
+              <select class="form-control" id="departamento" name="departamento">
+                <option value="">-- Seleccione departamento --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="municipio">Municipio de Residencia</label>
+              <select class="form-control" id="municipio" name="municipio" disabled>
+                <option value="">-- Seleccione departamento primero --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 5: Documentos ==================== -->
+        <div class="step-panel" id="step-panel-5">
+          <p class="step-section-title">📂 Carga de Documentos</p>
+          <div class="alert alert-info" style="margin-bottom:1.5rem">
+            📎 Los archivos deben ser <strong>PDF, JPG o PNG</strong>.
+            Tamaño máximo: <strong>3 MB</strong> por archivo.
+          </div>
+
+          <div class="upload-grid">
+
+            <div class="upload-zone required-doc" id="zone-cedula">
+              <div class="upload-icon">🪪</div>
+              <p class="upload-name">Cédula / Documento de Identidad</p>
+              <p class="upload-hint">PDF, JPG o PNG – Máx 3MB</p>
+              <input type="file" name="cedula" id="file-cedula" accept=".pdf,.jpg,.jpeg,.png,.webp">
+            </div>
+
+            <div class="upload-zone required-doc" id="zone-consentimiento">
+              <div class="upload-icon">📝</div>
+              <p class="upload-name">Consentimiento Tratamiento de Datos</p>
+              <p class="upload-hint">PDF – Máx 3MB</p>
+              <input type="file" name="consentimiento" id="file-consentimiento" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <div class="upload-zone" id="zone-hoja_vida">
+              <div class="upload-icon">📄</div>
+              <p class="upload-name">Hoja de Vida</p>
+              <p class="upload-hint">PDF – Máx 3MB</p>
+              <input type="file" name="hoja_vida" id="file-hoja_vida" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <div class="upload-zone" id="zone-formacion_academica">
+              <div class="upload-icon">🎓</div>
+              <p class="upload-name">Formación Académica</p>
+              <p class="upload-hint">PDF – Máx 3MB</p>
+              <input type="file" name="formacion_academica" id="file-formacion_academica" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <div class="upload-zone" id="zone-cert_experiencia">
+              <div class="upload-icon">🏆</div>
+              <p class="upload-name">Certificados de Experiencia</p>
+              <p class="upload-hint">PDF – Máx 3MB</p>
+              <input type="file" name="cert_experiencia" id="file-cert_experiencia" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+            <div class="upload-zone" id="zone-cert_residencia">
+              <div class="upload-icon">🏠</div>
+              <p class="upload-name">Certificado de Residencia</p>
+              <p class="upload-hint">PDF – Máx 3MB</p>
+              <input type="file" name="cert_residencia" id="file-cert_residencia" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+
+          </div><!-- /upload-grid -->
+
+          <div class="alert alert-warning" style="margin-top:1.25rem">
+            ⚠️ Al enviar este formulario, autoriza el tratamiento de sus datos personales
+            conforme a la Ley 1581 de 2012 y la política de privacidad de UT COMEXAGRO.
+          </div>
+
+        </div><!-- /step-panel-5 -->
+
+      </form><!-- /form-postulados -->
+
+    </div><!-- /modal-body -->
+
+    <!-- Footer con navegación -->
+    <div class="modal-footer">
+      <button class="btn-sm btn-prev" id="btn-prev" onclick="prevStep()">← Anterior</button>
+      <span class="step-counter" id="step-counter">Paso 1 de 5</span>
+      <div style="display:flex; gap:.75rem; align-items:center">
+        <button class="btn-sm btn-next" id="btn-next" onclick="nextStep()">Siguiente →</button>
+        <button class="btn-sm btn-submit" id="btn-submit" type="submit" form="form-postulados"
+                style="display:none;">✅ Enviar Registro</button>
+      </div>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /overlay-postulados -->
+
+<!-- ================================================================
+     MODAL: PQR
+     ================================================================ -->
+<div class="modal-overlay" id="overlay-pqr" role="dialog" aria-modal="true" aria-label="Radicar PQR">
+  <div class="modal">
+
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-header-icon">📋</div>
+        <div>
+          <div class="modal-title">Radicar PQR</div>
+          <div class="modal-subtitle">Petición, Queja, Reclamo o Sugerencia</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('overlay-pqr'); resetPQRModal();" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="modal-body" style="padding:0">
+
+      <!-- Success state -->
+      <div class="success-state" id="success-pqr">
+        <div class="success-icon">📩</div>
+        <h3 class="success-title">¡PQR Radicada Exitosamente!</h3>
+        <p class="success-desc">
+          Su solicitud ha sido registrada. Guarde el número de radicado
+          para hacer seguimiento de su caso.
+        </p>
+        <div class="success-radicado"></div>
+        <p class="text-muted" style="font-size:.8rem;">Fecha de radicación: <span class="success-fecha"></span></p>
+        <button class="btn-primary" onclick="closeModal('overlay-pqr'); resetPQRModal();">Cerrar</button>
+      </div>
+
+      <!-- Formulario PQR -->
+      <form id="form-pqr" style="padding:2rem;" enctype="multipart/form-data" novalidate>
+        <div class="form-grid">
+
+          <div class="form-group form-full">
+            <label class="form-label" for="pqr-tipo">Tipo de Solicitud <span class="required">*</span></label>
+            <select class="form-control" id="pqr-tipo" name="tipo" required>
+              <option value="">-- Seleccione el tipo --</option>
+              <option value="Peticion">📩 Petición</option>
+              <option value="Queja">😤 Queja</option>
+              <option value="Reclamo">⚠️ Reclamo</option>
+              <option value="Sugerencia">💡 Sugerencia</option>
+              <option value="Denuncia">🚨 Denuncia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pqr-nombre">Nombre Completo <span class="required">*</span></label>
+            <input type="text" class="form-control" id="pqr-nombre" name="nombre"
+                   placeholder="Nombres y apellidos" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pqr-documento">Número de Documento</label>
+            <input type="text" class="form-control" id="pqr-documento" name="documento"
+                   placeholder="Cédula o identificación">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pqr-email">Correo Electrónico</label>
+            <input type="email" class="form-control" id="pqr-email" name="email"
+                   placeholder="Para notificación de respuesta">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pqr-telefono">Teléfono de Contacto</label>
+            <input type="tel" class="form-control" id="pqr-telefono" name="telefono"
+                   placeholder="Celular o fijo">
+          </div>
+
+          <div class="form-group form-full">
+            <label class="form-label" for="pqr-descripcion">Descripción Detallada <span class="required">*</span></label>
+            <textarea class="form-control" id="pqr-descripcion" name="descripcion" rows="5"
+                      placeholder="Describa detalladamente su solicitud (mínimo 20 caracteres)..."
+                      required minlength="20"></textarea>
+          </div>
+
+          <div class="form-group form-full">
+            <label class="form-label" for="pqr-adjunto">Adjunto (opcional)</label>
+            <div class="upload-zone" style="max-width:100%; grid-column:1/-1">
+              <div class="upload-icon">📎</div>
+              <p class="upload-name">Documento de soporte</p>
+              <p class="upload-hint">PDF, JPG o PNG – Máx 3MB</p>
+              <input type="file" name="adjunto" id="pqr-adjunto" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="alert alert-info" style="margin-top:1rem">
+          ℹ️ Recibirá respuesta en los próximos <strong>15 días hábiles</strong>
+          a través del email o medio de contacto registrado.
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <span style="font-size:.8rem; color:var(--clr-gray-400)">UT COMEXAGRO – PQRS</span>
+      <button class="btn-sm btn-submit" id="btn-pqr-submit" type="submit" form="form-pqr">
+        📤 Radicar PQR
+      </button>
+    </div>
+
+  </div>
+</div><!-- /overlay-pqr -->
+
+<!-- Scripts -->
+<script src="assets/js/colombia-data.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>

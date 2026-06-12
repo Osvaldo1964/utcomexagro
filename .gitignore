@@ -1,0 +1,59 @@
+# ============================================================
+# .gitignore – UT COMEXAGRO
+# ============================================================
+
+# ---- Archivos de configuración con credenciales ----
+# IMPORTANTE: Copiar config.example.php → config.php localmente
+api/config/config.php
+
+# ---- Archivos subidos por usuarios (documentos) ----
+uploads/postulados/
+uploads/pqrs/
+uploads/contratos/
+# Mantener la estructura pero no los archivos
+!uploads/.htaccess
+!uploads/.gitkeep
+
+# ---- Archivos de entorno ----
+.env
+.env.local
+.env.production
+
+# ---- Logs ----
+*.log
+logs/
+error_log
+
+# ---- Dependencias (si se usa Composer en el futuro) ----
+vendor/
+composer.lock
+
+# ---- Node (si se agrega frontend build) ----
+node_modules/
+dist/
+.npm
+
+# ---- IDEs y editores ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- PHP ----
+*.cache
+*.tmp
+
+# ---- OS ----
+.DS_Store
+.AppleDouble
+.LSOverride
+ehthumbs.db
+
+# ---- Archivos de backup ----
+*.bak
+*.backup
+*.orig

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso al Sistema – UT COMEXAGRO</title>
+  <meta name="description" content="Acceso al sistema administrativo de UT COMEXAGRO">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-950: #052E16;
+      --green-900: #14532D;
+      --green-800: #166534;
+      --green-700: #15803D;
+      --green-600: #16A34A;
+      --green-500: #22C55E;
+      --green-300: #86EFAC;
+      --green-100: #DCFCE7;
+      --amber-400: #FBBF24;
+      --amber-300: #FCD34D;
+      --gray-50:  #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --white: #FFFFFF;
+      --danger: #DC2626;
+      --t: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: linear-gradient(135deg, var(--green-950) 0%, #0A2010 40%, var(--green-900) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Fondo decorativo */
+    body::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r="1" fill="%2322C55E" opacity=".08"/></svg>') repeat;
+      pointer-events: none;
+    }
+
+    /* Orbs decorativos */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      animation: drift 12s ease-in-out infinite;
+    }
+    .orb-1 { width:400px; height:400px; top:-100px; left:-100px; background:rgba(21,128,61,.2); }
+    .orb-2 { width:300px; height:300px; bottom:-80px; right:-80px; background:rgba(251,191,36,.1); animation-delay:-6s; }
+    @keyframes drift {
+      0%,100%{transform:translate(0,0)}
+      50%{transform:translate(30px,-30px)}
+    }
+
+    /* Panel izquierdo – decorativo */
+    .login-left {
+      flex: 1; display: none;
+      align-items: center; justify-content: center;
+      padding: 3rem;
+      position: relative; z-index: 1;
+    }
+    @media(min-width:900px){ .login-left { display:flex; } }
+    .left-content { text-align: center; max-width: 420px; }
+    .left-logo-wrap {
+      width: 90px; height: 90px;
+      background: linear-gradient(135deg, var(--green-600), var(--amber-400));
+      border-radius: 24px; margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem;
+      box-shadow: 0 12px 40px rgba(22,163,74,.4);
+    }
+    .left-brand {
+      font-size: 1.6rem; font-weight: 900;
+      color: var(--white); letter-spacing: .06em;
+      margin-bottom: .5rem;
+    }
+    .left-tagline { font-size: .95rem; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 2.5rem; }
+
+    .left-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .left-stat {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; padding: 1.25rem;
+      text-align: center;
+    }
+    .left-stat-n {
+      font-size: 1.75rem; font-weight: 900;
+      color: var(--amber-400); display: block; line-height: 1;
+      margin-bottom: .25rem;
+    }
+    .left-stat-l { font-size: .72rem; color: rgba(255,255,255,.45); }
+
+    /* Panel derecho – formulario */
+    .login-right {
+      width: 100%; max-width: 480px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem; position: relative; z-index: 2;
+      margin: 0 auto;
+    }
+    @media(min-width:900px){ .login-right { border-left: 1px solid rgba(255,255,255,.07); } }
+
+    .login-card {
+      width: 100%; background: rgba(255,255,255,.04);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      padding: 2.75rem 2.5rem;
+      box-shadow: 0 24px 80px rgba(0,0,0,.4);
+    }
+
+    /* Mobile logo */
+    .mobile-logo {
+      display: flex; align-items: center; gap: .75rem;
+      justify-content: center; margin-bottom: 2rem;
+    }
+    @media(min-width:900px){ .mobile-logo { display:none; } }
+    .mobile-logo-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--green-600), var(--amber-400));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .mobile-logo-name { font-size: 1rem; font-weight: 800; color: var(--white); letter-spacing:.06em; }
+
+    .login-title {
+      font-size: 1.6rem; font-weight: 800;
+      color: var(--white); margin-bottom: .5rem;
+    }
+    .login-subtitle {
+      font-size: .875rem; color: rgba(255,255,255,.45);
+      margin-bottom: 2rem; line-height: 1.6;
+    }
+
+    /* Form */
+    .form-group { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.25rem; }
+    .form-label { font-size: .8rem; font-weight: 600; color: rgba(255,255,255,.65); }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: .875rem; top: 50%; transform: translateY(-50%);
+      font-size: 1rem; pointer-events: none;
+    }
+    .form-control {
+      width: 100%; padding: .75rem .875rem .75rem 2.75rem;
+      background: rgba(255,255,255,.07);
+      border: 1.5px solid rgba(255,255,255,.12);
+      border-radius: 10px;
+      color: var(--white); font-size: .9rem; font-family: inherit;
+      outline: none; transition: var(--t);
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.25); }
+    .form-control:focus {
+      border-color: var(--green-500);
+      background: rgba(255,255,255,.1);
+      box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+    }
+    .form-control.error { border-color: var(--danger); }
+
+    /* Toggle password */
+    .toggle-pass {
+      position: absolute; right: .875rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,.4);
+      cursor: pointer; font-size: .9rem; transition: var(--t);
+      line-height: 1;
+    }
+    .toggle-pass:hover { color: rgba(255,255,255,.8); }
+
+    /* Opciones */
+    .login-options {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.75rem;
+    }
+    .remember-wrap {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .8rem; color: rgba(255,255,255,.5); cursor: pointer;
+    }
+    .remember-wrap input { accent-color: var(--green-500); width: 15px; height: 15px; }
+    .forgot-link {
+      font-size: .8rem; color: var(--green-300);
+      transition: var(--t); text-decoration: none;
+    }
+    .forgot-link:hover { color: var(--green-500); }
+
+    /* Botón login */
+    .btn-login {
+      width: 100%; padding: .875rem;
+      background: linear-gradient(135deg, var(--green-700), var(--green-600));
+      color: var(--white); font-size: .95rem; font-weight: 700;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: var(--t); position: relative;
+      box-shadow: 0 4px 16px rgba(21,128,61,.35);
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-login:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--green-600), var(--green-500));
+      box-shadow: 0 8px 24px rgba(21,128,61,.5);
+      transform: translateY(-1px);
+    }
+    .btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .login-divider {
+      text-align: center; margin: 1.5rem 0;
+      position: relative; color: rgba(255,255,255,.2); font-size: .8rem;
+    }
+    .login-divider::before, .login-divider::after {
+      content: '';
+      position: absolute; top: 50%; width: 40%; height: 1px;
+      background: rgba(255,255,255,.1);
+    }
+    .login-divider::before { left: 0; }
+    .login-divider::after  { right: 0; }
+
+    .btn-register {
+      width: 100%; padding: .875rem;
+      background: transparent;
+      color: rgba(255,255,255,.7); font-size: .9rem; font-weight: 600;
+      border: 1.5px solid rgba(255,255,255,.15);
+      border-radius: 10px; cursor: pointer;
+      transition: var(--t); font-family: inherit;
+    }
+    .btn-register:hover {
+      border-color: var(--green-500);
+      color: var(--green-300);
+      background: rgba(34,197,94,.06);
+    }
+
+    .back-link {
+      display: flex; align-items: center; justify-content: center;
+      gap: .375rem; margin-top: 1.75rem;
+      font-size: .8rem; color: rgba(255,255,255,.3);
+      text-decoration: none; transition: var(--t);
+    }
+    .back-link:hover { color: rgba(255,255,255,.6); }
+
+    /* Alert de error */
+    .alert-error {
+      display: none; padding: .75rem 1rem;
+      background: rgba(220,38,38,.15);
+      border: 1px solid rgba(220,38,38,.3);
+      border-radius: 8px; color: #FCA5A5;
+      font-size: .825rem; margin-bottom: 1.25rem;
+      gap: .5rem; align-items: center;
+    }
+    .alert-error.show { display: flex; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Panel izquierdo decorativo -->
+  <div class="login-left">
+    <div class="left-content">
+      <div class="left-logo-wrap">🌿</div>
+      <div class="left-brand">UT COMEXAGRO</div>
+      <p class="left-tagline">
+        Sistema de Gestión Administrativa para el<br>
+        Desarrollo Agrícola Nacional
+      </p>
+      <div class="left-stats">
+        <div class="left-stat">
+          <span class="left-stat-n">200+</span>
+          <span class="left-stat-l">Empleos directos</span>
+        </div>
+        <div class="left-stat">
+          <span class="left-stat-n">33</span>
+          <span class="left-stat-l">Departamentos</span>
+        </div>
+        <div class="left-stat">
+          <span class="left-stat-n">4</span>
+          <span class="left-stat-l">Programas activos</span>
+        </div>
+        <div class="left-stat">
+          <span class="left-stat-n">JWT</span>
+          <span class="left-stat-l">Seguridad avanzada</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel derecho – formulario de login -->
+  <div class="login-right">
+    <div class="login-card">
+
+      <!-- Logo móvil -->
+      <div class="mobile-logo">
+        <div class="mobile-logo-icon">🌿</div>
+        <div class="mobile-logo-name">UT COMEXAGRO</div>
+      </div>
+
+      <h1 class="login-title">Bienvenido 👋</h1>
+      <p class="login-subtitle">Ingrese sus credenciales para acceder al sistema administrativo.</p>
+
+      <!-- Alert error -->
+      <div class="alert-error" id="login-error" role="alert">
+        <span>⚠️</span>
+        <span id="login-error-msg">Credenciales incorrectas. Intente nuevamente.</span>
+      </div>
+
+      <!-- Formulario -->
+      <form id="form-login" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="login-email">Correo Electrónico</label>
+          <div class="input-wrap">
+            <span class="input-icon">📧</span>
+            <input type="email" class="form-control" id="login-email" name="email"
+                   placeholder="usuario@utcomexagro.com"
+                   autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Contraseña</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            <input type="password" class="form-control" id="login-password" name="password"
+                   placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="toggle-pass" id="toggle-pass" aria-label="Mostrar contraseña">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div class="login-options">
+          <label class="remember-wrap">
+            <input type="checkbox" id="remember" name="remember">
+            Recordarme
+          </label>
+          <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="btn-login">
+          🔐 Ingresar al Sistema
+        </button>
+
+        <div class="login-divider">o</div>
+
+        <button type="button" class="btn-register" onclick="alert('Módulo de registro en desarrollo.')">
+          ✏️ Solicitar acceso
+        </button>
+
+      </form>
+
+      <a href="index.html" class="back-link">
+        ← Volver al sitio público
+      </a>
+
+    </div>
+  </div>
+
+  <script>
+    // Toggle mostrar/ocultar contraseña
+    document.getElementById('toggle-pass').addEventListener('click', function () {
+      const pwd = document.getElementById('login-password');
+      const isText = pwd.type === 'text';
+      pwd.type = isText ? 'password' : 'text';
+      this.textContent = isText ? '👁️' : '🙈';
+    });
+
+    // Submit del login (placeholder – conectar con api/auth/login.php en Fase 2)
+    document.getElementById('form-login').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorEl  = document.getElementById('login-error');
+      const errorMsg = document.getElementById('login-error-msg');
+      const btn      = document.getElementById('btn-login');
+
+      // Validación básica
+      if (!email || !password) {
+        errorMsg.textContent = 'Por favor ingrese email y contraseña.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      errorEl.classList.remove('show');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Verificando...';
+
+      try {
+        const fd = new FormData();
+        fd.append('email', email);
+        fd.append('password', password);
+
+        const res  = await fetch('/utcomexagro/api/auth/login.php', {
+          method: 'POST', body: fd
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          // Guardar token
+          sessionStorage.setItem('utca_token',   json.data.access_token);
+          sessionStorage.setItem('utca_refresh',  json.data.refresh_token);
+          sessionStorage.setItem('utca_user',     JSON.stringify(json.data.user));
+          // Redirigir al panel
+          window.location.href = 'admin/index.html';
+        } else {
+          errorMsg.textContent = json.message || 'Credenciales incorrectas.';
+          errorEl.classList.add('show');
+          btn.disabled = false;
+          btn.innerHTML = '🔐 Ingresar al Sistema';
+          document.getElementById('login-password').classList.add('error');
+          setTimeout(() => document.getElementById('login-password').classList.remove('error'), 3000);
+        }
+      } catch (err) {
+        // API aún no implementada – mensaje informativo
+        errorMsg.textContent = '⚙️ El módulo de autenticación estará disponible en la Fase 2 del desarrollo.';
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '🔐 Ingresar al Sistema';
+      }
+    });
+  </script>
+
+</body>
+</html>

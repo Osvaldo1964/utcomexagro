@@ -1,0 +1,14 @@
+# Protección del directorio de uploads
+# Denegar acceso directo a archivos desde el navegador
+
+Options -Indexes
+<FilesMatch "\.(php|php5|php7|phtml|html|htm)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Solo permitir PDF, imágenes
+<FilesMatch "\.(pdf|jpg|jpeg|png|webp)$">
+    Order deny,allow
+    Allow from all
+</FilesMatch>
