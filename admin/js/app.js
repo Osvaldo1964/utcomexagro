@@ -364,14 +364,14 @@ function startClock() {
 // ================================================================
 //  MODAL GENÉRICO
 // ================================================================
-function showModal(title, bodyHtml, footerHtml = '') {
+function showModal(title, bodyHtml, footerHtml = '', isLarge = false) {
   let backdrop = document.getElementById('generic-modal-backdrop');
   if (!backdrop) {
     backdrop = document.createElement('div');
     backdrop.id = 'generic-modal-backdrop';
     backdrop.className = 'modal-backdrop';
     backdrop.innerHTML = `
-      <div class="modal-admin">
+      <div class="modal-admin" id="generic-modal-dialog">
         <div class="modal-admin-header">
           <div class="modal-admin-title" id="generic-modal-title"></div>
           <div class="modal-admin-close" onclick="closeModal()">✕</div>
@@ -382,6 +382,12 @@ function showModal(title, bodyHtml, footerHtml = '') {
     backdrop.addEventListener('click', e => { if(e.target===backdrop) closeModal(); });
     document.body.appendChild(backdrop);
   }
+  
+  const dialog = document.getElementById('generic-modal-dialog');
+  if (dialog) {
+    dialog.classList.toggle('modal-lg', isLarge);
+  }
+
   document.getElementById('generic-modal-title').textContent = title;
   document.getElementById('generic-modal-body').innerHTML = bodyHtml;
   document.getElementById('generic-modal-footer').innerHTML = footerHtml || '<button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>';

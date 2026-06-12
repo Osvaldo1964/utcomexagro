@@ -160,7 +160,7 @@ async function abrirModalOrganizacion() {
     const tiposOpts = tipos.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
 
     showModal('Crear Nueva Organización', `
-      <form id="form-crear-org" onsubmit="guardarOrganizacion(event)" style="display:flex;flex-direction:column;gap:1rem;text-align:left;">
+      <form id="form-crear-org" onsubmit="guardarOrganizacion(event)" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1rem 1.5rem;text-align:left;">
         <div class="form-group">
           <label class="form-label" for="org-nit">NIT *</label>
           <input type="text" class="form-control" id="org-nit" required placeholder="800.123.456-7">
@@ -193,6 +193,11 @@ async function abrirModalOrganizacion() {
           <input type="email" class="form-control" id="org-email" placeholder="contacto@organizacion.org">
         </div>
         <div class="form-group">
+          <label class="form-label" for="org-max">Máximo de Beneficiarios *</label>
+          <input type="number" class="form-control" id="org-max" value="50" min="0" required placeholder="0 para ilimitado">
+          <small style="color:var(--gray-500);font-size:.7rem;display:block;margin-top:.15rem">Establece 0 para cupo ilimitado.</small>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="org-dep">Departamento</label>
           <input type="text" class="form-control" id="org-dep" placeholder="Ej: Antioquia">
         </div>
@@ -200,17 +205,12 @@ async function abrirModalOrganizacion() {
           <label class="form-label" for="org-mun">Municipio</label>
           <input type="text" class="form-control" id="org-mun" placeholder="Ej: Medellín">
         </div>
-        <div class="form-group">
-          <label class="form-label" for="org-max">Máximo de Beneficiarios *</label>
-          <input type="number" class="form-control" id="org-max" value="50" min="0" required placeholder="0 para ilimitado">
-          <small style="color:var(--gray-500);font-size:.75rem">Establece 0 si no hay límite de beneficiarios para esta entidad.</small>
-        </div>
         <button type="submit" style="display:none;" id="btn-submit-org-hidden"></button>
       </form>
     `, `
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="document.getElementById('btn-submit-org-hidden').click()">Guardar Organización</button>
-    `);
+    `, true);
   } catch (err) {
     showToastAdmin('Error al abrir formulario de organizaciones.', 'error');
   }
