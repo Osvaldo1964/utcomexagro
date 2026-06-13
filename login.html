@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso al Sistema – UT COMEXAGRO</title>
   <meta name="description" content="Acceso al sistema administrativo de UT COMEXAGRO">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -65,6 +65,10 @@
       0%,100%{transform:translate(0,0)}
       50%{transform:translate(30px,-30px)}
     }
+    @keyframes floatLogo {
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-12px)}
+    }
 
     /* Panel izquierdo – decorativo */
     .login-left {
@@ -77,11 +81,10 @@
     .left-content { text-align: center; max-width: 420px; }
     .left-logo-wrap {
       width: 90px; height: 90px;
-      background: linear-gradient(135deg, var(--green-600), var(--amber-400));
-      border-radius: 24px; margin: 0 auto 1.5rem;
+      background: transparent;
+      border-radius: 0; margin: 0 auto 1.5rem;
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.8rem;
-      box-shadow: 0 12px 40px rgba(22,163,74,.4);
+      width: 160px; height: 160px;
     }
     .left-brand {
       font-size: 1.6rem; font-weight: 900;
@@ -133,10 +136,10 @@
     @media(min-width:900px){ .mobile-logo { display:none; } }
     .mobile-logo-icon {
       width: 48px; height: 48px;
-      background: linear-gradient(135deg, var(--green-600), var(--amber-400));
+      background: linear-gradient(135deg, var(--green-700), var(--green-600));
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
+      box-shadow: 0 4px 12px rgba(22,163,74,.4);
     }
     .mobile-logo-name { font-size: 1rem; font-weight: 800; color: var(--white); letter-spacing:.06em; }
 
@@ -277,7 +280,22 @@
   <!-- Panel izquierdo decorativo -->
   <div class="login-left">
     <div class="left-content">
-      <div class="left-logo-wrap">🌿</div>
+      <div class="left-logo-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 130"
+          style="width:160px;height:160px;animation:floatLogo 4s ease-in-out infinite;filter:drop-shadow(0 8px 28px rgba(0,0,0,.5));">
+          <!-- Triángulo: punta ámbar, lados blancos -->
+          <polyline points="60,6 112,104" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="60,6 8,104" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="104" x2="60" y2="104" stroke="rgba(255,255,255,0.9)" stroke-width="7" stroke-linecap="round"/>
+          <line x1="60" y1="104" x2="112" y2="104" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
+          <!-- Hoja central -->
+          <path d="M60,98 C60,85 52,70 46,56 C55,64 60,78 60,98Z" fill="white" opacity="0.95"/>
+          <path d="M60,98 C60,85 68,70 74,56 C65,64 60,78 60,98Z" fill="white" opacity="0.95"/>
+          <path d="M60,90 C60,77 54,63 50,50 C58,58 60,73 60,90Z" fill="rgba(134,239,172,0.8)"/>
+          <path d="M60,90 C60,77 66,63 70,50 C62,58 60,73 60,90Z" fill="rgba(134,239,172,0.8)"/>
+          <line x1="60" y1="98" x2="60" y2="54" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="left-brand">UT COMEXAGRO</div>
       <p class="left-tagline">
         Sistema de Gestión Administrativa para el<br>
@@ -310,7 +328,15 @@
 
       <!-- Logo móvil -->
       <div class="mobile-logo">
-        <div class="mobile-logo-icon">🌿</div>
+        <div class="mobile-logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 110" width="28" height="28">
+            <polyline points="60,6 112,104" fill="none" stroke="#F59E0B" stroke-width="8" stroke-linecap="round"/>
+            <polyline points="60,6 8,104" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+            <line x1="8" y1="104" x2="112" y2="104" stroke="white" stroke-width="8" stroke-linecap="round"/>
+            <path d="M60,98 C60,83 51,68 45,54 C55,63 60,78 60,98Z" fill="white"/>
+            <path d="M60,98 C60,83 69,68 75,54 C65,63 60,78 60,98Z" fill="white"/>
+          </svg>
+        </div>
         <div class="mobile-logo-name">UT COMEXAGRO</div>
       </div>
 

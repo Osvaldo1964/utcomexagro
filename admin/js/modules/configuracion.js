@@ -28,17 +28,166 @@ function renderConfiguracion() {
           <div class="module-desc">Definir roles y asignar permisos granulares por módulo y acción.</div>
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
-        <div class="module-card" onclick="alert('Próximamente')">
+        <div class="module-card" onclick="loadParametros()">
           <div class="module-card-header">
-            <div class="module-icon icon-config">🌿</div>
-            <div><div class="module-name">Programas</div><span class="badge badge-dev">Próximo</span></div>
+            <div class="module-icon icon-config">🏢</div>
+            <div><div class="module-name">Parámetros</div><span class="badge badge-active">Activo</span></div>
           </div>
-          <div class="module-desc">Administrar los programas activos disponibles para postulación.</div>
-          <div class="module-card-footer"><span class="module-link">Próximamente <span class="module-link-arrow">›</span></span></div>
+          <div class="module-desc">Información de la empresa operadora: NIT, nombre, representante legal y datos de contacto.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
       </div>
     </div>
   `;
+}
+
+// ================================================================
+//  PARÁMETROS DE LA EMPRESA OPERADORA
+// ================================================================
+async function loadParametros() {
+  updateBreadcrumb([
+    { label: '🏠', key: 'dashboard' },
+    { label: 'Configuración', key: 'configuracion' },
+    { label: 'Parámetros de Empresa' }
+  ]);
+
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="module-page">
+      <div class="module-page-header">
+        <div class="module-page-title">🏢 Parámetros de la Empresa Operadora</div>
+        <div class="module-page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('configuracion')">↩️ Volver</button>
+        </div>
+      </div>
+
+      <div class="form-card" style="max-width:720px;margin:0 auto">
+
+        <!-- Header -->
+        <div class="form-card-header">
+          <div class="form-card-title">Información de la Empresa</div>
+        </div>
+
+        <!-- Body -->
+        <div class="form-card-body">
+          <p style="color:var(--gray-400);font-size:.85rem;margin:0 0 1.5rem">
+            Configure los datos de la empresa u organización que opera esta plataforma.
+            Esta información puede aparecer en reportes y documentos generados por el sistema.
+          </p>
+
+          <form id="form-parametros" onsubmit="guardarParametros(event)" autocomplete="off">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.5rem">
+
+              <div class="form-group">
+                <label class="form-label" for="param-nit">NIT / Identificación</label>
+                <input type="text" class="form-control" id="param-nit"
+                  placeholder="Ej: 900.123.456-7" maxlength="20">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="param-nombre">Nombre de la Empresa *</label>
+                <input type="text" class="form-control" id="param-nombre"
+                  placeholder="Nombre completo o razón social" required maxlength="200">
+              </div>
+
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label" for="param-direccion">Dirección</label>
+                <input type="text" class="form-control" id="param-direccion"
+                  placeholder="Calle, carrera, número, ciudad" maxlength="300">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="param-telefono">Teléfono</label>
+                <input type="tel" class="form-control" id="param-telefono"
+                  placeholder="Ej: 601 123 4567" maxlength="20">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="param-email">Correo Electrónico</label>
+                <input type="email" class="form-control" id="param-email"
+                  placeholder="contacto@empresa.com" maxlength="150">
+              </div>
+
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label" for="param-rep-legal">Representante Legal</label>
+                <input type="text" class="form-control" id="param-rep-legal"
+                  placeholder="Nombre completo del representante legal" maxlength="200">
+              </div>
+
+            </div>
+          </form>
+
+          <div id="param-updated" style="display:none;margin-top:1rem;font-size:.8rem;color:var(--gray-400);text-align:right">
+            Última actualización: <span id="param-updated-date"></span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="form-card-footer">
+          <button type="button" class="btn btn-secondary" onclick="navigateTo('configuracion')">Cancelar</button>
+          <button type="submit" form="form-parametros" class="btn btn-primary" id="btn-guardar-param">💾 Guardar Parámetros</button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  // Cargar datos existentes
+  try {
+    const res = await API.configuracion.parametros.get();
+    if (res.success && res.data) {
+      const d = res.data;
+      const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+      set('param-nit',       d.nit);
+      set('param-nombre',    d.nombre);
+      set('param-direccion', d.direccion);
+      set('param-telefono',  d.telefono);
+      set('param-email',     d.email);
+      set('param-rep-legal', d.rep_legal);
+
+      if (d.updated_at) {
+        document.getElementById('param-updated').style.display = 'block';
+        document.getElementById('param-updated-date').textContent = formatDate(d.updated_at);
+      }
+    }
+  } catch (err) {
+    showToastAdmin('Error al cargar los parámetros de empresa.', 'error');
+  }
+}
+
+async function guardarParametros(event) {
+  event.preventDefault();
+
+  const btn = document.getElementById('btn-guardar-param');
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+
+  const fd = new FormData();
+  fd.append('nit',       document.getElementById('param-nit')?.value.trim()       || '');
+  fd.append('nombre',    document.getElementById('param-nombre')?.value.trim()    || '');
+  fd.append('direccion', document.getElementById('param-direccion')?.value.trim() || '');
+  fd.append('telefono',  document.getElementById('param-telefono')?.value.trim()  || '');
+  fd.append('email',     document.getElementById('param-email')?.value.trim()     || '');
+  fd.append('rep_legal', document.getElementById('param-rep-legal')?.value.trim() || '');
+
+  try {
+    const res = await API.configuracion.parametros.save(fd);
+    if (res.success) {
+      showToastAdmin('Parámetros guardados correctamente.');
+      // Mostrar timestamp de actualización
+      const updEl = document.getElementById('param-updated');
+      const updDate = document.getElementById('param-updated-date');
+      if (updEl && updDate) {
+        updEl.style.display = 'block';
+        updDate.textContent = formatDate(new Date().toISOString());
+      }
+    } else {
+      showToastAdmin(res.message || 'Error al guardar.', 'error');
+    }
+  } catch (err) {
+    showToastAdmin('Error de conexión con el servidor.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '💾 Guardar Parámetros'; }
+  }
 }
 
 // ================================================================

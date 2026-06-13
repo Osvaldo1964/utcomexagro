@@ -82,6 +82,10 @@ const API = (() => {
       return fn;
     })(),
     permisos: ()       => get('/config/permisos.php'),
+    parametros: {
+      get:  ()   => get('/config/parametros.php'),
+      save: (fd) => post('/config/parametros.php', fd),
+    },
   };
 
   const beneficiarios = {
