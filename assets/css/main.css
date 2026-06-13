@@ -938,3 +938,81 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 .mt-1 { margin-top: .25rem; }
 .mt-2 { margin-top: .5rem; }
 .mt-3 { margin-top: .75rem; }
+
+/* =========================================
+   FORMULARIO MULTIPASO (STEPPER)
+   ========================================= */
+.stepper-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--clr-gray-200);
+  padding-bottom: 1rem;
+}
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  position: relative;
+  flex: 1;
+}
+.step-item.active {
+  opacity: 1;
+}
+.step-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 4px;
+  background: var(--clr-primary);
+  border-radius: 4px 4px 0 0;
+}
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--clr-gray-200);
+  color: var(--clr-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.step-item.active .step-circle {
+  background: var(--clr-primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(34,197,94,0.3);
+}
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+.step-content {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.step-content.active {
+  display: block;
+}
+.step-title {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--clr-gray-800);
+  border-left: 4px solid var(--clr-primary);
+  padding-left: 0.75rem;
+}
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--clr-gray-200);
+}

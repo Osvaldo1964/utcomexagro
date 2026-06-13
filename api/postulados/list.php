@@ -29,14 +29,12 @@ if ($search) {
 $sql = "
     SELECT po.id, po.tipo_doc, po.num_doc,
            po.p_nombre, po.p_apellido, po.s_nombre, po.s_apellido,
-           po.email, po.telefono,
+           po.email, po.telefono, po.especialidad,
            po.estado_evaluacion, po.observaciones_evaluacion,
            po.created_at,
-           pr.nombre AS programa_nombre,
-           c.nombre  AS cargo_nombre
+           org.nombre AS organizacion_nombre
     FROM postulados po
-    LEFT JOIN programas pr ON po.programa_id = pr.id
-    LEFT JOIN cargos c     ON po.cargo_id = c.id
+    LEFT JOIN organizaciones org ON po.organizacion_id = org.id
     WHERE " . implode(' AND ', $where) . "
     ORDER BY po.created_at DESC
 ";

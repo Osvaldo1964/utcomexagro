@@ -17,16 +17,22 @@ function clean(string $value): string {
 
 $tiposDocValidos   = ['CC','CE','TI','Pasaporte','PEP','PPT'];
 $sexosValidos      = ['Masculino','Femenino','Otro','No informa'];
+$estadoCivilValidos= ['Soltero(a)','Casado(a)','Unión Libre','Separado(a)','Viudo(a)'];
 $rhValidos         = ['O+','O-','A+','A-','B+','B-','AB+','AB-'];
 $tallaCamisaValida = ['XS','S','M','L','XL','XXL','XXXL'];
-$tiposDocArchivo   = ['cedula','consentimiento','hoja_vida','formacion_academica','cert_experiencia','cert_residencia'];
+$tiposDocArchivo   = ['cedula','hoja_vida','cert_experiencia'];
 
 // Campos requeridos
-$requiredFields = ['tipo_doc','num_doc','p_apellido','p_nombre','programa_id'];
+$requiredFields = ['tipo_doc','num_doc','p_apellido','p_nombre'];
 foreach ($requiredFields as $field) {
     if (empty($_POST[$field])) {
         jsonResponse(false, "El campo '$field' es requerido.", [], 422);
     }
+}
+
+// Consentimiento es obligatorio (checkbox)
+if (empty($_POST['consentimiento'])) {
+    jsonResponse(false, "Debe aceptar la política de tratamiento de datos personales.", [], 422);
 }
 
 // Validar tipo de documento
@@ -55,6 +61,9 @@ if ($fechaNac && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaNac)) {
 $sexo = clean($_POST['sexo'] ?? '');
 if ($sexo && !in_array($sexo, $sexosValidos, true)) $sexo = null;
 
+$estadoCivil = clean($_POST['estado_civil'] ?? '');
+if ($estadoCivil && !in_array($estadoCivil, $estadoCivilValidos, true)) $estadoCivil = null;
+
 $rh = clean($_POST['rh'] ?? '');
 if ($rh && !in_array($rh, $rhValidos, true)) $rh = null;
 
@@ -75,21 +84,23 @@ try {
     $pdo->beginTransaction();
 
     $sql = "INSERT INTO postulados (
-        programa_id, cargo_id,
+        organizacion_id,
         tipo_doc, num_doc,
         p_apellido, s_apellido, p_nombre, s_nombre,
         direccion, email, telefono,
-        sexo, rh, fecha_nacimiento,
+        sexo, estado_civil, rh, fecha_nacimiento,
+        especialidad,
         talla_camisa, talla_pantalon,
         eps, afp, arl, discapacidad,
         pais_origen, departamento, municipio,
         ip_registro
     ) VALUES (
-        :programa_id, :cargo_id,
+        :organizacion_id,
         :tipo_doc, :num_doc,
         :p_apellido, :s_apellido, :p_nombre, :s_nombre,
         :direccion, :email, :telefono,
-        :sexo, :rh, :fecha_nacimiento,
+        :sexo, :estado_civil, :rh, :fecha_nacimiento,
+        :especialidad,
         :talla_camisa, :talla_pantalon,
         :eps, :afp, :arl, :discapacidad,
         :pais_origen, :departamento, :municipio,
@@ -98,8 +109,7 @@ try {
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':programa_id'      => (int)($_POST['programa_id'] ?? 0) ?: null,
-        ':cargo_id'         => (int)($_POST['cargo_id'] ?? 0) ?: null,
+        ':organizacion_id'  => filter_var($_POST['organizacion_id'] ?? null, FILTER_VALIDATE_INT) ?: null,
         ':tipo_doc'         => $tipoDoc,
         ':num_doc'          => $numDoc,
         ':p_apellido'       => clean($_POST['p_apellido'] ?? ''),
@@ -110,8 +120,10 @@ try {
         ':email'            => $email ?: null,
         ':telefono'         => clean($_POST['telefono'] ?? '') ?: null,
         ':sexo'             => $sexo ?: null,
+        ':estado_civil'     => $estadoCivil ?: null,
         ':rh'               => $rh ?: null,
         ':fecha_nacimiento' => $fechaNac ?: null,
+        ':especialidad'     => clean($_POST['especialidad'] ?? '') ?: null,
         ':talla_camisa'     => $tallaCamisa ?: null,
         ':talla_pantalon'   => clean($_POST['talla_pantalon'] ?? '') ?: null,
         ':eps'              => clean($_POST['eps'] ?? '') ?: null,

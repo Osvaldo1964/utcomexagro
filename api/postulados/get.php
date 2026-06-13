@@ -21,12 +21,10 @@ $pdo = Database::getConnection();
 // Buscar postulado
 $stmt = $pdo->prepare("
     SELECT po.*,
-           pr.nombre AS programa_nombre,
-           c.nombre  AS cargo_nombre,
-           u.nombre  AS evaluador_nombre, u.apellidos AS evaluador_apellidos
+           org.nombre AS organizacion_nombre,
+           u.nombre   AS evaluador_nombre, u.apellidos AS evaluador_apellidos
     FROM postulados po
-    LEFT JOIN programas pr ON po.programa_id = pr.id
-    LEFT JOIN cargos c     ON po.cargo_id = c.id
+    LEFT JOIN organizaciones org ON po.organizacion_id = org.id
     LEFT JOIN usuarios u   ON po.evaluado_por = u.id
     WHERE po.id = ?
     LIMIT 1

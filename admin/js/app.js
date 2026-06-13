@@ -61,6 +61,17 @@ const MODULES = [
     iconClass: 'icon-people',
   },
   {
+    key: 'organizaciones',
+    label: 'Organizaciones',
+    icon: '🏢',
+    desc: 'Gestión de organizaciones y entidades',
+    section: 'gestion',
+    permiso: 'configuracion.usuarios', // Usamos el mismo nivel por ahora, o ajustamos
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-inventory',
+  },
+  {
     key: 'presupuesto',
     label: 'Presupuesto',
     icon: '💰',
@@ -206,6 +217,7 @@ function navigateTo(moduleKey) {
       case 'contratacion':  renderContratacion(); break;
       case 'configuracion': renderConfiguracion(); break;
       case 'beneficiarios': renderBeneficiariosMenu(); break;
+      case 'organizaciones':renderOrganizaciones(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);

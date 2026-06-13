@@ -10,6 +10,7 @@ async function renderPostulados() {
       <div class="module-page-header">
         <div class="module-page-title">👤 Postulados</div>
         <div class="module-page-actions">
+          <button class="btn btn-primary btn-sm" onclick="abrirModalPostulacion()">+ Nueva Postulación</button>
           <button class="btn btn-secondary btn-sm" onclick="exportPostulados()">📥 Exportar</button>
         </div>
       </div>
@@ -36,8 +37,8 @@ async function renderPostulados() {
                 <th>#</th>
                 <th>Nombre completo</th>
                 <th>Documento</th>
-                <th>Programa</th>
-                <th>Cargo</th>
+                <th>Especialidad</th>
+                <th>Organización</th>
                 <th>Estado</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
@@ -101,8 +102,8 @@ function renderPostuladosTable(data) {
       <td style="color:var(--gray-400);font-size:.75rem">${p.id}</td>
       <td><strong>${p.p_nombre} ${p.p_apellido}</strong><br><small style="color:var(--gray-400)">${p.email || ''}</small></td>
       <td>${p.tipo_doc} ${p.num_doc}</td>
-      <td style="font-size:.8rem">${p.programa_nombre || '–'}</td>
-      <td style="font-size:.8rem">${p.cargo_nombre || '–'}</td>
+      <td style="font-size:.8rem">${p.especialidad || '–'}</td>
+      <td style="font-size:.8rem">${p.organizacion_nombre || '–'}</td>
       <td><span class="badge ${badgeMap[p.estado_evaluacion] || ''}">${p.estado_evaluacion}</span></td>
       <td style="font-size:.78rem;color:var(--gray-400)">${formatDate(p.created_at)}</td>
       <td>
@@ -185,6 +186,7 @@ async function verPostulado(id) {
               <div><span style="color:var(--gray-500)">Email:</span> <span style="color:var(--white)">${p.email || '–'}</span></div>
               <div><span style="color:var(--gray-500)">Teléfono:</span> <span style="color:var(--white)">${p.telefono || '–'}</span></div>
               <div><span style="color:var(--gray-500)">Sexo:</span> <span style="color:var(--white)">${p.sexo || '–'}</span></div>
+              <div><span style="color:var(--gray-500)">Estado Civil:</span> <span style="color:var(--white)">${p.estado_civil || '–'}</span></div>
               <div><span style="color:var(--gray-500)">RH:</span> <span style="color:var(--white)">${p.rh || '–'}</span></div>
               <div><span style="color:var(--gray-500)">Fecha Nacimiento:</span> <span style="color:var(--white)">${p.fecha_nacimiento ? formatDate(p.fecha_nacimiento) : '–'}</span></div>
               <div><span style="color:var(--gray-500)">Origen:</span> <span style="color:var(--white)">${p.pais_origen || 'Colombia'}</span></div>
@@ -197,8 +199,8 @@ async function verPostulado(id) {
           <div>
             <h4 style="color:var(--green-300);font-size:.85rem;text-transform:uppercase;margin-bottom:.75rem;border-left:3px solid var(--green-500);padding-left:.5rem;">Postulación y Salud</h4>
             <div style="display:grid;gap:.5rem;font-size:.85rem;">
-              <div><span style="color:var(--gray-500)">Programa:</span> <strong style="color:var(--white)">${p.programa_nombre || '–'}</strong></div>
-              <div><span style="color:var(--gray-500)">Cargo solicitado:</span> <strong style="color:var(--white)">${p.cargo_nombre || '–'}</strong></div>
+              <div><span style="color:var(--gray-500)">Organización:</span> <strong style="color:var(--white)">${p.organizacion_nombre || 'Ninguna'}</strong></div>
+              <div><span style="color:var(--gray-500)">Especialidad:</span> <strong style="color:var(--white)">${p.especialidad || '–'}</strong></div>
               <div style="margin-top:.5rem;"><span style="color:var(--gray-500)">Talla Camisa:</span> <span style="color:var(--white)">${p.talla_camisa || '–'}</span></div>
               <div><span style="color:var(--gray-500)">Talla Pantalón:</span> <span style="color:var(--white)">${p.talla_pantalon || '–'}</span></div>
               <div style="margin-top:.5rem;"><span style="color:var(--gray-500)">EPS:</span> <span style="color:var(--white)">${p.eps || '–'}</span></div>
@@ -304,4 +306,21 @@ function renderContratacion() {
       </div>
     </div>
   `;
+}
+
+// ---- MODAL NUEVA POSTULACIÓN ----
+function abrirModalPostulacion() {
+  const modalHtml = `<div id="form-admin-postulacion-container"></div>`;
+  // Usamos el isLarge=true para modal amplio
+  showModal('Nueva Postulación', modalHtml, '<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>', true);
+  
+  setTimeout(() => {
+    if (typeof FormPostulacion !== 'undefined') {
+      FormPostulacion.setApiPath('/utcomexagro/api');
+      FormPostulacion.init('form-admin-postulacion-container', 'admin');
+    } else {
+      console.error('FormPostulacion component not loaded.');
+      showToastAdmin('Error al cargar el formulario.', 'error');
+    }
+  }, 100);
 }

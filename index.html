@@ -282,53 +282,19 @@
     <div class="conv-inner" data-anim>
       <span class="section-label" style="color:var(--amber-300)">Convocatoria 2024</span>
       <h2 class="conv-title">
-        ¿Quieres hacer parte de<br>
-        <span>UT COMEXAGRO</span>?
+        Registro de <span>Postulados</span>
       </h2>
       <p class="conv-desc">
-        Buscamos profesionales, técnicos y promotores comprometidos con
-        el desarrollo del campo colombiano. ¡Postúlate ahora!
+        Diligencia tu información personal, académica y adjunta los documentos 
+        requeridos para participar en nuestra convocatoria y hacer parte del equipo UT COMEXAGRO.
       </p>
     </div>
 
-    <div class="cta-cards">
-
-      <!-- Registro de Postulados -->
-      <div class="cta-card green-card" onclick="openModal('overlay-postulados')" id="cta-postulados" role="button" tabindex="0"
-           onkeypress="if(event.key==='Enter') openModal('overlay-postulados')">
-        <div class="cta-card-icon">👤</div>
-        <h3 class="cta-card-title">Registro de Postulados</h3>
-        <p class="cta-card-desc">
-          Diligencia tu información personal, académica y adjunta los documentos
-          requeridos para participar en nuestra convocatoria.
-        </p>
-        <button class="cta-card-btn">Postularme ahora →</button>
-      </div>
-
-      <!-- Radicar PQR -->
-      <div class="cta-card amber-card" onclick="openModal('overlay-pqr')" id="cta-pqr" role="button" tabindex="0"
-           onkeypress="if(event.key==='Enter') openModal('overlay-pqr')">
-        <div class="cta-card-icon">📋</div>
-        <h3 class="cta-card-title">Radicar PQR</h3>
-        <p class="cta-card-desc">
-          ¿Tienes una Petición, Queja, Reclamo o Sugerencia? Comunícate
-          con nosotros de manera formal y recibirás respuesta oportuna.
-        </p>
-        <button class="cta-card-btn">Radicar ahora →</button>
-      </div>
-
-      <!-- Sistema Admin -->
-      <div class="cta-card blue-card" onclick="location.href='login.html'" id="cta-sistema" role="button" tabindex="0">
-        <div class="cta-card-icon">🔐</div>
-        <h3 class="cta-card-title">Sistema Administrativo</h3>
-        <p class="cta-card-desc">
-          Acceso exclusivo para personal autorizado de UT COMEXAGRO al
-          sistema de gestión interna y administrativo.
-        </p>
-        <button class="cta-card-btn">Acceder →</button>
-      </div>
-
+    <!-- Contenedor del formulario público -->
+    <div class="form-card" style="max-width: 900px; margin: 2rem auto; background: var(--clr-white); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+      <div id="public-form-container"></div>
     </div>
+
   </div>
 </section>
 
@@ -398,7 +364,7 @@
       <div class="footer-col">
         <p class="footer-col-title">Acciones</p>
         <ul>
-          <li><a href="#" onclick="openModal('overlay-postulados')">Registro Postulados</a></li>
+          <li><a href="#convocatoria">Registro Postulados</a></li>
           <li><a href="#" onclick="openModal('overlay-pqr')">Radicar PQR</a></li>
           <li><a href="login.html">Sistema Admin</a></li>
         </ul>
@@ -421,307 +387,6 @@
 </footer>
 
 <!-- ================================================================
-     MODAL: REGISTRO DE POSTULADOS
-     ================================================================ -->
-<div class="modal-overlay" id="overlay-postulados" role="dialog" aria-modal="true" aria-label="Registro de Postulados">
-  <div class="modal modal-lg">
-
-    <!-- Header -->
-    <div class="modal-header">
-      <div class="modal-header-info">
-        <div class="modal-header-icon">👤</div>
-        <div>
-          <div class="modal-title">Registro de Postulados</div>
-          <div class="modal-subtitle">Convocatoria UT COMEXAGRO 2024 – Complete todos los campos requeridos</div>
-        </div>
-      </div>
-      <button class="modal-close" onclick="closeModal('overlay-postulados'); resetPostuladosModal();" aria-label="Cerrar">✕</button>
-    </div>
-
-    <!-- Barra de progreso -->
-    <div class="modal-progress">
-      <div class="modal-progress-bar" id="modal-progress-bar" style="width:0%"></div>
-    </div>
-
-    <!-- Navegación de pasos -->
-    <div class="stepper-nav">
-      <div class="step-item active" id="step-nav-1" onclick="goToStep(1)">
-        <div class="step-bubble">1</div>
-        <span class="step-label">Programa</span>
-      </div>
-      <div class="step-item" id="step-nav-2" onclick="goToStep(2)">
-        <div class="step-bubble">2</div>
-        <span class="step-label">Datos Personales</span>
-      </div>
-      <div class="step-item" id="step-nav-3" onclick="goToStep(3)">
-        <div class="step-bubble">3</div>
-        <span class="step-label">Dotación / Salud</span>
-      </div>
-      <div class="step-item" id="step-nav-4" onclick="goToStep(4)">
-        <div class="step-bubble">4</div>
-        <span class="step-label">Ubicación</span>
-      </div>
-      <div class="step-item" id="step-nav-5" onclick="goToStep(5)">
-        <div class="step-bubble">5</div>
-        <span class="step-label">Documentos</span>
-      </div>
-    </div>
-
-    <!-- Cuerpo -->
-    <div class="modal-body">
-
-      <!-- Estado de éxito -->
-      <div class="success-state" id="success-postulado">
-        <div class="success-icon">✅</div>
-        <h3 class="success-title">¡Registro Exitoso!</h3>
-        <p class="success-desc">
-          Tu postulación ha sido recibida correctamente.
-          <br><strong class="success-name"></strong> – Doc: <span class="success-doc"></span>
-          <br>Nos pondremos en contacto a través del email o teléfono registrado.
-        </p>
-        <button class="btn-primary" onclick="closeModal('overlay-postulados'); resetPostuladosModal();">
-          Cerrar
-        </button>
-      </div>
-
-      <!-- Formulario multipaso -->
-      <form id="form-postulados" enctype="multipart/form-data" novalidate>
-
-        <!-- ==================== PASO 1: Programa y Rol ==================== -->
-        <div class="step-panel active" id="step-panel-1">
-          <p class="step-section-title">🎯 Selección de Programa y Cargo</p>
-          <div class="alert alert-info">
-            Seleccione el programa al cual desea postularse y el cargo que aspira a ocupar.
-            Revise bien el perfil requerido antes de continuar.
-          </div>
-          <div class="form-grid">
-            <div class="form-group form-full">
-              <label class="form-label" for="programa_id">
-                Programa <span class="required">*</span>
-              </label>
-              <select class="form-control" id="programa_id" name="programa_id" required>
-                <option value="">-- Seleccione un programa --</option>
-              </select>
-            </div>
-            <div class="form-group form-full">
-              <label class="form-label" for="cargo_id">
-                Cargo / Perfil al que Aspira <span class="required">*</span>
-              </label>
-              <select class="form-control" id="cargo_id" name="cargo_id" required>
-                <option value="">-- Primero seleccione un programa --</option>
-              </select>
-            </div>
-          </div>
-          <div class="alert alert-warning" style="margin-top:1.25rem">
-            📌 <strong>Nota:</strong> Solo puede registrarse una vez por número de documento.
-            Asegúrese de completar toda la información con datos verídicos.
-          </div>
-        </div>
-
-        <!-- ==================== PASO 2: Datos Personales ==================== -->
-        <div class="step-panel" id="step-panel-2">
-          <p class="step-section-title">🪪 Información Personal</p>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="tipo_doc">Tipo de Documento <span class="required">*</span></label>
-              <select class="form-control" id="tipo_doc" name="tipo_doc" required>
-                <option value="">Seleccione</option>
-                <option value="CC">Cédula de Ciudadanía</option>
-                <option value="CE">Cédula de Extranjería</option>
-                <option value="TI">Tarjeta de Identidad</option>
-                <option value="Pasaporte">Pasaporte</option>
-                <option value="PEP">PEP (Permiso Especial)</option>
-                <option value="PPT">PPT</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="num_doc">Número de Documento <span class="required">*</span></label>
-              <input type="text" class="form-control" id="num_doc" name="num_doc"
-                     placeholder="Ej: 1234567890" required maxlength="20">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="p_apellido">Primer Apellido <span class="required">*</span></label>
-              <input type="text" class="form-control" id="p_apellido" name="p_apellido" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="s_apellido">Segundo Apellido</label>
-              <input type="text" class="form-control" id="s_apellido" name="s_apellido">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="p_nombre">Primer Nombre <span class="required">*</span></label>
-              <input type="text" class="form-control" id="p_nombre" name="p_nombre" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="s_nombre">Segundo Nombre</label>
-              <input type="text" class="form-control" id="s_nombre" name="s_nombre">
-            </div>
-            <div class="form-group form-full">
-              <label class="form-label" for="direccion">Dirección de Residencia</label>
-              <input type="text" class="form-control" id="direccion" name="direccion"
-                     placeholder="Ej: Cra 15 # 45-23, Apto 301">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="email">Correo Electrónico</label>
-              <input type="email" class="form-control" id="email" name="email"
-                     placeholder="correo@ejemplo.com">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="telefono">Teléfono / Celular</label>
-              <input type="tel" class="form-control" id="telefono" name="telefono"
-                     placeholder="Ej: 3001234567">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="sexo">Sexo</label>
-              <select class="form-control" id="sexo" name="sexo">
-                <option value="">Seleccione</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Otro">Otro</option>
-                <option value="No informa">Prefiero no decir</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="rh">Grupo Sanguíneo (RH)</label>
-              <select class="form-control" id="rh" name="rh">
-                <option value="">Seleccione</option>
-                <option>O+</option><option>O-</option>
-                <option>A+</option><option>A-</option>
-                <option>B+</option><option>B-</option>
-                <option>AB+</option><option>AB-</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="fecha_nacimiento">Fecha de Nacimiento</label>
-              <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento"
-                     max="2006-01-01">
-            </div>
-          </div>
-        </div>
-
-        <!-- ==================== PASO 3: Dotación y Seguridad Social ==================== -->
-        <div class="step-panel" id="step-panel-3">
-          <p class="step-section-title">👕 Información para Dotación</p>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="talla_camisa">Talla de Camisa</label>
-              <select class="form-control" id="talla_camisa" name="talla_camisa">
-                <option value="">Seleccione</option>
-                <option value="XS">XS</option><option value="S">S</option>
-                <option value="M">M</option><option value="L">L</option>
-                <option value="XL">XL</option><option value="XXL">XXL</option>
-                <option value="XXXL">XXXL</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="talla_pantalon">Talla de Pantalón</label>
-              <input type="text" class="form-control" id="talla_pantalon" name="talla_pantalon"
-                     placeholder="Ej: 30, 32, 34, M, L">
-            </div>
-          </div>
-
-          <p class="step-section-title" style="margin-top:1.75rem">🏥 Seguridad Social</p>
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label" for="eps">Entidad de Salud (EPS)</label>
-              <input type="text" class="form-control" id="eps" name="eps"
-                     placeholder="Ej: Sura, Sanitas, Compensar...">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="afp">Fondo de Pensión (AFP)</label>
-              <input type="text" class="form-control" id="afp" name="afp"
-                     placeholder="Ej: Colpensiones, Protección...">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="arl">Administradora de Riesgos (ARL)</label>
-              <input type="text" class="form-control" id="arl" name="arl"
-                     placeholder="Ej: Sura, Colmena, Positiva...">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="discapacidad">¿Tiene alguna discapacidad?</label>
-              <input type="text" class="form-control" id="discapacidad" name="discapacidad"
-                     placeholder="Describa brevemente o escriba No">
-            </div>
-          </div>
-        </div>
-
-        <!-- ==================== PASO 4: Origen y Ubicación ==================== -->
-        <div class="step-panel" id="step-panel-4">
-          <p class="step-section-title">📍 Origen y Ubicación Actual</p>
-          <div class="form-grid">
-            <div class="form-group form-full">
-              <label class="form-label" for="pais_origen">País de Origen</label>
-              <input type="text" class="form-control" id="pais_origen" name="pais_origen"
-                     value="Colombia" placeholder="Ej: Colombia">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="departamento">Departamento de Residencia</label>
-              <select class="form-control" id="departamento" name="departamento">
-                <option value="">-- Seleccione departamento --</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="municipio">Municipio de Residencia</label>
-              <select class="form-control" id="municipio" name="municipio" disabled>
-                <option value="">-- Seleccione departamento primero --</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- ==================== PASO 5: Documentos ==================== -->
-        <div class="step-panel" id="step-panel-5">
-          <p class="step-section-title">📂 Carga de Documentos</p>
-          <div class="alert alert-info" style="margin-bottom:1.5rem">
-            📎 Los archivos deben ser <strong>PDF, JPG o PNG</strong>.
-            Tamaño máximo: <strong>3 MB</strong> por archivo.
-          </div>
-
-          <div class="upload-grid">
-
-            <div class="upload-zone required-doc" id="zone-cedula">
-              <div class="upload-icon">🪪</div>
-              <p class="upload-name">Cédula / Documento de Identidad</p>
-              <p class="upload-hint">PDF, JPG o PNG – Máx 3MB</p>
-              <input type="file" name="cedula" id="file-cedula" accept=".pdf,.jpg,.jpeg,.png,.webp">
-            </div>
-
-            <div class="upload-zone required-doc" id="zone-consentimiento">
-              <div class="upload-icon">📝</div>
-              <p class="upload-name">Consentimiento Tratamiento de Datos</p>
-              <p class="upload-hint">PDF – Máx 3MB</p>
-              <input type="file" name="consentimiento" id="file-consentimiento" accept=".pdf,.jpg,.jpeg,.png">
-            </div>
-
-            <div class="upload-zone" id="zone-hoja_vida">
-              <div class="upload-icon">📄</div>
-              <p class="upload-name">Hoja de Vida</p>
-              <p class="upload-hint">PDF – Máx 3MB</p>
-              <input type="file" name="hoja_vida" id="file-hoja_vida" accept=".pdf,.jpg,.jpeg,.png">
-            </div>
-
-            <div class="upload-zone" id="zone-formacion_academica">
-              <div class="upload-icon">🎓</div>
-              <p class="upload-name">Formación Académica</p>
-              <p class="upload-hint">PDF – Máx 3MB</p>
-              <input type="file" name="formacion_academica" id="file-formacion_academica" accept=".pdf,.jpg,.jpeg,.png">
-            </div>
-
-            <div class="upload-zone" id="zone-cert_experiencia">
-              <div class="upload-icon">🏆</div>
-              <p class="upload-name">Certificados de Experiencia</p>
-              <p class="upload-hint">PDF – Máx 3MB</p>
-              <input type="file" name="cert_experiencia" id="file-cert_experiencia" accept=".pdf,.jpg,.jpeg,.png">
-            </div>
-
-            <div class="upload-zone" id="zone-cert_residencia">
-              <div class="upload-icon">🏠</div>
-              <p class="upload-name">Certificado de Residencia</p>
-              <p class="upload-hint">PDF – Máx 3MB</p>
-              <input type="file" name="cert_residencia" id="file-cert_residencia" accept=".pdf,.jpg,.jpeg,.png">
-            </div>
-
-          </div><!-- /upload-grid -->
-
           <div class="alert alert-warning" style="margin-top:1.25rem">
             ⚠️ Al enviar este formulario, autoriza el tratamiento de sus datos personales
             conforme a la Ley 1581 de 2012 y la política de privacidad de UT COMEXAGRO.
@@ -858,7 +523,15 @@
 
 <!-- Scripts -->
 <script src="assets/js/colombia-data.js"></script>
-<script src="assets/js/main.js"></script>
+<script src="assets/js/form_postulacion.js?v=2"></script>
+<script src="assets/js/main.js?v=2"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof FormPostulacion !== 'undefined') {
+      FormPostulacion.init('public-form-container', 'public');
+    }
+  });
+</script>
 
 </body>
 </html>
