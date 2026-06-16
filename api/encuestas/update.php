@@ -7,7 +7,7 @@ requireMethod('POST');
 $user = JWT::requireAuth();
 $pdo = Database::getConnection();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = getJsonInput();
 
 $id = $input['id'] ?? null;
 $titulo = trim($input['titulo'] ?? '');
@@ -30,9 +30,8 @@ try {
         exit;
     }
 
-    if (empty($titulo)) {
-        echo json_encode(['success' => false, 'message' => 'El título de la encuesta es obligatorio.']);
-        exit;
+    if (!$id || empty($titulo)) {
+        jsonResponse(false, 'El ID y el título de la encuesta son obligatorios.');
     }
 
     if (is_array($preguntas) && count($preguntas) > 10) {
@@ -62,8 +61,8 @@ try {
         ]);
     }
 
-    echo json_encode(['success' => true, 'message' => 'Encuesta actualizada correctamente.']);
+    jsonResponse(true, 'Encuesta actualizada exitosamente.');
 
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()]);
+    jsonResponse(false, 'Error al actualizar la encuesta: ' . $e->getMessage());
 }

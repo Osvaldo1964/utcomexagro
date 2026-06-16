@@ -45,7 +45,7 @@ async function renderDisenoEncuestas() {
   ]);
 
   const content = document.getElementById('content');
-  content.innerHTML = '<div class="skeleton-row skeleton" style="width:60%;height:24px;margin-bottom:1.5rem"></div><div class="skeleton-row skeleton"></div>';
+  showSkeletonLoader();
 
   try {
     const res = await API.get('/encuestas/list.php');
@@ -344,7 +344,7 @@ async function renderRegistroEncuestas() {
   ]);
 
   const content = document.getElementById('content');
-  content.innerHTML = '<div class="skeleton-row skeleton" style="width:60%;height:24px;margin-bottom:1.5rem"></div><div class="skeleton-row skeleton"></div>';
+  showSkeletonLoader();
 
   try {
     const res = await API.get('/encuestas/list.php');

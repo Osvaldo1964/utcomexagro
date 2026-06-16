@@ -128,43 +128,23 @@ try {
     $pdf->Output('F', $pdfFile);
 
     // 7. Enviar Email con PHPMailer
-    require_once __DIR__ . '/../libs/phpmailer/Exception.php';
-    require_once __DIR__ . '/../libs/phpmailer/PHPMailer.php';
-    require_once __DIR__ . '/../libs/phpmailer/SMTP.php';
+    require_once __DIR__ . '/../config/mail.php';
 
-    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-    $email_enviado = false;
-    $email_error = '';
-    
-    try {
-        $mail->isSMTP();
-        $mail->CharSet    = 'UTF-8';
-        $mail->Host       = 'smtp.hostinger.com'; 
-        $mail->SMTPAuth   = true;
-        // NOTA: Configura aquí tu correo y contraseña (app password)
-        $mail->Username   = 'gerencia@utcomexagro.com'; 
-        $mail->Password   = '^6s8ul!Fh9?'; 
-        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+    $subject = "Tu Contrato con UT Comexagro: {$numero_contrato}";
+    $body = "Hola <b>{$nombres}</b>,<br><br>Adjunto enviamos tu contrato número <b>{$numero_contrato}</b>. Por favor revísalo, fírmalo y entrégalo en nuestras oficinas.<br><br>Atentamente,<br>Equipo UT Comexagro";
 
-        $mail->setFrom($mail->Username, 'UT Comexagro');
-        $mail->addAddress($postulado['email'], "{$nombres} {$apellidos}");
+    $mailResult = sendMail(
+        $postulado['email'], 
+        "{$nombres} {$apellidos}", 
+        $subject, 
+        $body, 
+        'gerencia@utcomexagro.com', 
+        'UT Comexagro', 
+        $pdfFile
+    );
 
-        // Adjunto
-        $mail->addAttachment($pdfFile);
-
-        // Contenido
-        $mail->isHTML(true);
-        $mail->Subject = "Tu Contrato con UT Comexagro: {$numero_contrato}";
-        $mail->Body    = "Hola <b>{$nombres}</b>,<br><br>Adjunto enviamos tu contrato número <b>{$numero_contrato}</b>. Por favor revísalo, fírmalo y entrégalo en nuestras oficinas.<br><br>Atentamente,<br>Equipo UT Comexagro";
-
-        // Intenta enviar el correo
-        $mail->send();
-        $email_enviado = true; 
-    } catch (Exception $e) {
-        $email_enviado = false;
-        $email_error = $mail->ErrorInfo;
-    }
+    $email_enviado = $mailResult['success'];
+    $email_error = $mailResult['error'];
 
     $pdo->commit();
 

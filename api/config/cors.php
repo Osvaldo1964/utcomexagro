@@ -47,6 +47,15 @@ function jsonResponse(bool $success, string $message, array $data = [], int $htt
 }
 
 /**
+ * Leer y decodificar entrada JSON cruda (php://input).
+ * @return array
+ */
+function getJsonInput(): array {
+    $raw = file_get_contents('php://input');
+    return json_decode($raw, true) ?? [];
+}
+
+/**
  * Solo aceptar método HTTP específico.
  */
 function requireMethod(string $method): void {

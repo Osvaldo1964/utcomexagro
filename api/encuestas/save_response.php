@@ -7,7 +7,7 @@ requireMethod('POST');
 $user = JWT::requireAuth();
 $pdo = Database::getConnection();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = getJsonInput();
 
 $encuesta_id = $input['encuesta_id'] ?? null;
 $identificacion = trim($input['identificacion'] ?? '');
@@ -17,8 +17,7 @@ $municipio = trim($input['municipio'] ?? '');
 $respuestas = $input['respuestas'] ?? [];
 
 if (!$encuesta_id || empty($identificacion) || empty($nombres)) {
-    echo json_encode(['success' => false, 'message' => 'Faltan datos obligatorios de identificación.']);
-    exit;
+    jsonResponse(false, 'Faltan datos obligatorios de identificación.');
 }
 
 try {
@@ -43,8 +42,8 @@ try {
         $ip
     ]);
 
-    echo json_encode(['success' => true, 'message' => 'Respuestas guardadas exitosamente.']);
+    jsonResponse(true, 'Respuestas guardadas exitosamente.');
 
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Error al guardar respuesta: ' . $e->getMessage()]);
+    jsonResponse(false, 'Error al guardar respuesta: ' . $e->getMessage());
 }

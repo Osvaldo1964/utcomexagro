@@ -20,8 +20,9 @@ $stats['seleccionados'] = (int)$pdo->query("SELECT COUNT(*) FROM postulados WHER
 // Contratos activos
 $stats['contratos'] = (int)$pdo->query("SELECT COUNT(*) FROM contratos WHERE estado='activo'")->fetchColumn();
 
-// PQRs pendientes
-$stats['pqrs_pendientes'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs WHERE estado='pendiente'")->fetchColumn();
+// PQRS
+$stats['pqrs_total'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs")->fetchColumn();
+$stats['pqrs_resueltas'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs WHERE estado IN ('resuelto', 'cerrado')")->fetchColumn();
 
 // Postulados por estado (para gráfico)
 $stmt = $pdo->query("SELECT estado_evaluacion, COUNT(*) as total FROM postulados GROUP BY estado_evaluacion");

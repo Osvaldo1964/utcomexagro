@@ -7,7 +7,7 @@ requireMethod('POST');
 $user = JWT::requireAuth();
 $pdo = Database::getConnection();
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = getJsonInput();
 
 $titulo = trim($input['titulo'] ?? '');
 $fecha_inicio = trim($input['fecha_inicio'] ?? '');
@@ -15,8 +15,7 @@ $fecha_fin = trim($input['fecha_fin'] ?? '');
 $preguntas = $input['preguntas'] ?? [];
 
 if (empty($titulo)) {
-    echo json_encode(['success' => false, 'message' => 'El título de la encuesta es obligatorio.']);
-    exit;
+    jsonResponse(false, 'El título de la encuesta es obligatorio.');
 }
 
 if (!is_array($preguntas)) {
@@ -60,15 +59,8 @@ try {
         $user['sub'] ?? null
     ]);
 
-    echo json_encode([
-        'success' => true,
-        'message' => 'Encuesta creada exitosamente.',
-        'id' => $pdo->lastInsertId()
-    ]);
+    jsonResponse(true, 'Encuesta creada exitosamente.', ['id' => $pdo->lastInsertId()]);
 
 } catch (PDOException $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Error al guardar la encuesta: ' . $e->getMessage()
-    ]);
+    jsonResponse(false, 'Error al guardar la encuesta: ' . $e->getMessage());
 }

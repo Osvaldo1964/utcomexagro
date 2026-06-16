@@ -95,6 +95,17 @@ const MODULES = [
     badgeClass: 'badge-dev',
     iconClass: 'icon-survey',
   },
+  {
+    key: 'pqrs',
+    label: 'PQRS',
+    icon: '🗣️',
+    desc: 'Control y seguimiento de Peticiones, Quejas y Reclamos',
+    section: 'admin',
+    permiso: 'pqrs.leer',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-message',
+  },
 ];
 
 // ---- Estado de la app ----
@@ -188,7 +199,7 @@ function navigateTo(moduleKey) {
 
   // Cargar vista
   const content = document.getElementById('content');
-  content.innerHTML = '<div class="skeleton-row skeleton" style="width:60%;height:24px;margin-bottom:1.5rem"></div><div class="skeleton-row skeleton"></div><div class="skeleton-row skeleton" style="width:80%"></div>';
+  showSkeletonLoader('content');
 
   setTimeout(() => {
     switch(moduleKey) {
@@ -199,6 +210,7 @@ function navigateTo(moduleKey) {
       case 'beneficiarios': renderBeneficiariosMenu(); break;
       case 'organizaciones':renderOrganizaciones(); break;
       case 'encuestas':     renderEncuestas(); break;
+      case 'pqrs':          renderPqrs(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);
@@ -240,7 +252,7 @@ function renderDashboard() {
         </div>
         <div class="stat-card">
           <div class="stat-icon red">📩</div>
-          <div><div class="stat-value" id="stat-pqrs">–</div><div class="stat-label">PQRs pendientes</div></div>
+          <div><div class="stat-value" id="stat-pqrs">–</div><div class="stat-label">PQRS (Total / Resueltas)</div></div>
         </div>
       </div>
 
@@ -277,7 +289,7 @@ async function loadDashboardStats() {
       if (document.getElementById('stat-postulados'))   document.getElementById('stat-postulados').textContent   = d.postulados   ?? 0;
       if (document.getElementById('stat-seleccionados'))document.getElementById('stat-seleccionados').textContent = d.seleccionados ?? 0;
       if (document.getElementById('stat-contratos'))    document.getElementById('stat-contratos').textContent    = d.contratos    ?? 0;
-      if (document.getElementById('stat-pqrs'))         document.getElementById('stat-pqrs').textContent         = d.pqrs_pendientes ?? 0;
+      if (document.getElementById('stat-pqrs'))         document.getElementById('stat-pqrs').textContent         = `${d.pqrs_total ?? 0} / ${d.pqrs_resueltas ?? 0}`;
     }
   } catch { /* silencioso */ }
 }
@@ -468,6 +480,21 @@ function updateBreadcrumb(pathArray) {
     }
     container.appendChild(span);
   });
+}
+
+/**
+ * Muestra una animación de carga (skeleton) en el contenedor especificado
+ * @param {string} containerId ID del contenedor donde se mostrará
+ */
+function showSkeletonLoader(containerId = 'content') {
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.innerHTML = `
+      <div class="skeleton-row skeleton" style="width:60%;height:24px;margin-bottom:1.5rem"></div>
+      <div class="skeleton-row skeleton"></div>
+      <div class="skeleton-row skeleton" style="width:80%"></div>
+    `;
+  }
 }
 
 // ---- Funcionalidad de Pestañas (Tabs) ----
