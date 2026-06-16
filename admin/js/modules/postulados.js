@@ -293,6 +293,14 @@ function renderContratacion() {
     <div class="module-page">
       <div class="module-page-title" style="margin-bottom:1.5rem">📋 Contratación</div>
       <div class="modules-grid">
+        <div class="module-card" onclick="renderCargos()">
+          <div class="module-card-header">
+            <div class="module-icon icon-config">💼</div>
+            <div><div class="module-name">Cargos Ofertados</div><span class="badge badge-active">Activo</span></div>
+          </div>
+          <div class="module-desc">Definición de cargos disponibles para la postulación y contratos.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
+        </div>
         <div class="module-card" onclick="window.location.hash='postulados'">
           <div class="module-card-header">
             <div class="module-icon icon-people">✅</div>
@@ -316,14 +324,6 @@ function renderContratacion() {
           </div>
           <div class="module-desc">Gestión de períodos de nómina, liquidaciones y desprendibles.</div>
           <div class="module-card-footer"><span class="module-link">Próximamente <span class="module-link-arrow">›</span></span></div>
-        </div>
-        <div class="module-card" onclick="renderCargos()">
-          <div class="module-card-header">
-            <div class="module-icon icon-config">💼</div>
-            <div><div class="module-name">Cargos Ofertados</div><span class="badge badge-active">Activo</span></div>
-          </div>
-          <div class="module-desc">Definición de cargos disponibles para la postulación y contratos.</div>
-          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
       </div>
     </div>

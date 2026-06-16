@@ -198,6 +198,7 @@ function navigateTo(moduleKey) {
       case 'configuracion': renderConfiguracion(); break;
       case 'beneficiarios': renderBeneficiariosMenu(); break;
       case 'organizaciones':renderOrganizaciones(); break;
+      case 'encuestas':     renderEncuestas(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);
@@ -356,7 +357,7 @@ function startClock() {
 // ================================================================
 //  MODAL GENÉRICO
 // ================================================================
-function showModal(title, bodyHtml, footerHtml = '', isLarge = false) {
+function showModal(title, bodyHtml, footerHtml = '', isLarge = false, preventOutsideClick = false) {
   let backdrop = document.getElementById('generic-modal-backdrop');
   if (!backdrop) {
     backdrop = document.createElement('div');
@@ -371,7 +372,9 @@ function showModal(title, bodyHtml, footerHtml = '', isLarge = false) {
         <div class="modal-admin-body" id="generic-modal-body"></div>
         <div class="modal-admin-footer" id="generic-modal-footer"></div>
       </div>`;
-    backdrop.addEventListener('click', e => { if(e.target===backdrop) closeModal(); });
+    backdrop.addEventListener('click', e => { 
+      if (e.target === backdrop && !backdrop.classList.contains('static-backdrop')) closeModal(); 
+    });
     document.body.appendChild(backdrop);
   }
   
@@ -383,6 +386,13 @@ function showModal(title, bodyHtml, footerHtml = '', isLarge = false) {
   document.getElementById('generic-modal-title').textContent = title;
   document.getElementById('generic-modal-body').innerHTML = bodyHtml;
   document.getElementById('generic-modal-footer').innerHTML = footerHtml || '<button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>';
+  
+  if (preventOutsideClick) {
+    backdrop.classList.add('static-backdrop');
+  } else {
+    backdrop.classList.remove('static-backdrop');
+  }
+  
   backdrop.classList.add('open');
 }
 
@@ -459,3 +469,18 @@ function updateBreadcrumb(pathArray) {
     container.appendChild(span);
   });
 }
+
+// ---- Funcionalidad de Pestañas (Tabs) ----
+window.switchTab = function(el, targetId) {
+  // Hide all contents in the modal
+  const container = el.closest('.modal-body') || document;
+  container.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+  container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  
+  // Show target
+  const target = document.getElementById(targetId);
+  if (target) target.style.display = 'flex';
+  
+  // Mark active
+  el.classList.add('active');
+};

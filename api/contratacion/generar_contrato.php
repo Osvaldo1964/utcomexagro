@@ -138,15 +138,16 @@ try {
     
     try {
         $mail->isSMTP();
+        $mail->CharSet    = 'UTF-8';
         $mail->Host       = 'smtp.hostinger.com'; 
         $mail->SMTPAuth   = true;
         // NOTA: Configura aquí tu correo y contraseña (app password)
         $mail->Username   = 'gerencia@utcomexagro.com'; 
         $mail->Password   = '^6s8ul!Fh9?'; 
-        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
+        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
 
-        $mail->setFrom('no-reply@utcomexagro.com', 'UT Comexagro');
+        $mail->setFrom($mail->Username, 'UT Comexagro');
         $mail->addAddress($postulado['email'], "{$nombres} {$apellidos}");
 
         // Adjunto
@@ -154,7 +155,7 @@ try {
 
         // Contenido
         $mail->isHTML(true);
-        $mail->Subject = mb_convert_encoding("Tu Contrato con UT Comexagro: {$numero_contrato}", 'ISO-8859-1', 'UTF-8');
+        $mail->Subject = "Tu Contrato con UT Comexagro: {$numero_contrato}";
         $mail->Body    = "Hola <b>{$nombres}</b>,<br><br>Adjunto enviamos tu contrato número <b>{$numero_contrato}</b>. Por favor revísalo, fírmalo y entrégalo en nuestras oficinas.<br><br>Atentamente,<br>Equipo UT Comexagro";
 
         // Intenta enviar el correo
@@ -169,8 +170,9 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Contrato generado exitosamente. ' . ($email_enviado ? 'Correo enviado.' : 'Revisa la config SMTP para enviar correos.'),
-        'numero_contrato' => $numero_contrato
+        'message' => 'Contrato generado exitosamente. ' . ($email_enviado ? 'Correo enviado.' : "Error SMTP: $email_error"),
+        'numero_contrato' => $numero_contrato,
+        'email_error' => $email_error
     ]);
 
 } catch (Exception $e) {

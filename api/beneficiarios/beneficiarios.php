@@ -42,6 +42,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $municipio       = trim($_POST['municipio'] ?? '');
     $programa_id     = filter_var($_POST['programa_id'] ?? null, FILTER_VALIDATE_INT);
     $estado          = $_POST['estado'] ?? 'activo';
+    $tratamiento_datos = (isset($_POST['tratamiento_datos']) && $_POST['tratamiento_datos'] === '1') ? 1 : 0;
 
     if (!$organizacion_id || !$tipo_doc || !$num_doc || !$p_apellido || !$p_nombre) {
         jsonResponse(false, 'Organización, tipo y número de documento, primer apellido y primer nombre son obligatorios.', [], 422);
@@ -74,16 +75,33 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         jsonResponse(false, 'El número de documento ya se encuentra registrado.', [], 409);
     }
 
+    // Procesar Archivos
+    $uploadDir = __DIR__ . '/../../uploads/beneficiarios/';
+    $doc_identidad_filename = null;
+    $rut_filename = null;
+
+    if (!empty($_FILES['doc_identidad_file']['name'])) {
+        $ext = pathinfo($_FILES['doc_identidad_file']['name'], PATHINFO_EXTENSION);
+        $doc_identidad_filename = uniqid('doc_') . '.' . $ext;
+        move_uploaded_file($_FILES['doc_identidad_file']['tmp_name'], $uploadDir . $doc_identidad_filename);
+    }
+
+    if (!empty($_FILES['rut_file']['name'])) {
+        $ext = pathinfo($_FILES['rut_file']['name'], PATHINFO_EXTENSION);
+        $rut_filename = uniqid('rut_') . '.' . $ext;
+        move_uploaded_file($_FILES['rut_file']['tmp_name'], $uploadDir . $rut_filename);
+    }
+
     // 3. Insertar
     $stmt = $pdo->prepare("
-        INSERT INTO beneficiarios (organizacion_id, tipo_doc, num_doc, p_apellido, s_apellido, p_nombre, s_nombre, email, telefono, departamento, municipio, programa_id, estado)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO beneficiarios (organizacion_id, tipo_doc, num_doc, p_apellido, s_apellido, p_nombre, s_nombre, email, telefono, departamento, municipio, programa_id, estado, tratamiento_datos, doc_identidad_file, rut_file)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $stmt->execute([
         $organizacion_id, $tipo_doc, $num_doc,
         $p_apellido, $s_apellido, $p_nombre, $s_nombre,
         $email, $telefono, $departamento, $municipio,
-        $programa_id ?: null, $estado
+        $programa_id ?: null, $estado, $tratamiento_datos, $doc_identidad_filename, $rut_filename
     ]);
     $newId = $pdo->lastInsertId();
 

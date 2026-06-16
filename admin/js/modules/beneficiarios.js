@@ -83,6 +83,7 @@ async function loadBeneficiarios() {
                 <th>Contacto</th>
                 <th>Ubicación</th>
                 <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="benefs-tbody">
@@ -151,6 +152,12 @@ function renderBeneficiariosTable(data) {
         </td>
         <td style="font-size:.8rem">${b.municipio || '–'}, ${b.departamento || '–'}</td>
         <td><span class="badge ${badgeClass}">${b.estado}</span></td>
+        <td>
+          <div style="display:flex;gap:.375rem">
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="abrirModalBeneficiario(${b.id})" title="Editar beneficiario">✏️</button>
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="confirmarEliminarBeneficiario(${b.id}, '${b.p_nombre} ${b.p_apellido}')" title="Eliminar beneficiario" style="color:var(--danger)">🗑️</button>
+          </div>
+        </td>
       </tr>
     `;
   }).join('');
@@ -172,8 +179,12 @@ function filterBeneficiarios() {
   renderBeneficiariosTable(filtered);
 }
 
-async function abrirModalBeneficiario() {
+async function abrirModalBeneficiario(id = null) {
+  if (id && typeof id === 'object') id = null; // Prevent Event objects from being used as ID
   try {
+    const b = id ? (window.allBeneficiarios || []).find(x => x.id === id) : null;
+    const titulo = b ? 'Editar Beneficiario' : 'Agregar Nuevo Beneficiario';
+
     let orgs = window.allOrganizaciones;
     if (!orgs) {
       const resOrgs = await API.beneficiarios.organizaciones.list();
@@ -188,104 +199,154 @@ async function abrirModalBeneficiario() {
       const limit = parseInt(o.max_beneficiarios, 10);
       const actual = parseInt(o.total_beneficiarios_actual, 10) || 0;
       const cupoText = limit > 0 ? `(Cupo: ${actual}/${limit})` : '(Ilimitado)';
-      const isFull = limit > 0 && actual >= limit;
-      return `<option value="${o.id}" ${isFull ? 'disabled style="color:var(--gray-400);"' : ''}>${o.nombre} ${cupoText}</option>`;
+      const isFull = limit > 0 && actual >= limit && (!b || b.organizacion_id !== o.id);
+      const sel = (b && b.organizacion_id === o.id) ? 'selected' : '';
+      return `<option value="${o.id}" ${sel} ${isFull ? 'disabled style="color:var(--gray-400);"' : ''}>${o.nombre} ${cupoText}</option>`;
     }).join('');
 
-    const progsOpts = progs.map(p => 
-      `<option value="${p.id}">${p.nombre}</option>`
-    ).join('');
+    const progsOpts = progs.map(p => {
+      const sel = (b && b.programa_id === p.id) ? 'selected' : '';
+      return `<option value="${p.id}" ${sel}>${p.nombre}</option>`;
+    }).join('');
 
-    showModal('Agregar Nuevo Beneficiario', `
-      <form id="form-crear-benef" onsubmit="guardarBeneficiario(event)" style="display:flex;flex-direction:column;gap:1rem;text-align:left;">
-        <div class="form-group">
-          <label class="form-label" for="benef-org">Organización Asociada *</label>
-          <select class="form-control" id="benef-org" required style="padding-left:1rem">
-            <option value="">Seleccione una organización...</option>
-            ${orgsOpts}
-          </select>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    const html = `
+      <div class="tabs-container" style="margin-bottom:1rem">
+        <div class="tab active" onclick="switchTab(this, 'tab-gen-benef')">Datos Generales</div>
+        <div class="tab" onclick="switchTab(this, 'tab-doc-benef')">Documentos</div>
+      </div>
+      
+      <form id="form-crear-benef" onsubmit="guardarBeneficiario(event, ${id || 'null'})" style="text-align:left;">
+        
+        <!-- TAB 1: DATOS GENERALES -->
+        <div id="tab-gen-benef" class="tab-content active" style="display:flex;flex-direction:column;gap:1rem;">
           <div class="form-group">
-            <label class="form-label" for="benef-tipodoc">Tipo Documento *</label>
-            <select class="form-control" id="benef-tipodoc" required style="padding-left:1rem">
-              <option value="CC">Cédula de Ciudadanía (CC)</option>
-              <option value="CE">Cédula de Extranjería (CE)</option>
-              <option value="TI">Tarjeta de Identidad (TI)</option>
-              <option value="Pasaporte">Pasaporte</option>
+            <label class="form-label" for="benef-org">Organización Asociada *</label>
+            <select class="form-control" id="benef-org" required style="padding-left:1rem">
+              <option value="">Seleccione una organización...</option>
+              ${orgsOpts}
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="benef-numdoc">Número Documento *</label>
-            <input type="text" class="form-control" id="benef-numdoc" required placeholder="Número documento">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group">
+              <label class="form-label" for="benef-tipodoc">Tipo Documento *</label>
+              <select class="form-control" id="benef-tipodoc" required style="padding-left:1rem">
+                <option value="CC" ${b && b.tipo_doc==='CC'?'selected':''}>Cédula de Ciudadanía (CC)</option>
+                <option value="CE" ${b && b.tipo_doc==='CE'?'selected':''}>Cédula de Extranjería (CE)</option>
+                <option value="TI" ${b && b.tipo_doc==='TI'?'selected':''}>Tarjeta de Identidad (TI)</option>
+                <option value="Pasaporte" ${b && b.tipo_doc==='Pasaporte'?'selected':''}>Pasaporte</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="benef-numdoc">Número Documento *</label>
+              <input type="text" class="form-control" id="benef-numdoc" required placeholder="Número documento" value="${b ? b.num_doc : ''}">
+            </div>
           </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group">
-            <label class="form-label" for="benef-pnombre">Primer Nombre *</label>
-            <input type="text" class="form-control" id="benef-pnombre" required placeholder="Primer nombre">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group">
+              <label class="form-label" for="benef-pnombre">Primer Nombre *</label>
+              <input type="text" class="form-control" id="benef-pnombre" required placeholder="Primer nombre" value="${b ? b.p_nombre : ''}" oninput="this.value = this.value.toUpperCase()">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="benef-snombre">Segundo Nombre</label>
+              <input type="text" class="form-control" id="benef-snombre" placeholder="Segundo nombre" value="${b && b.s_nombre ? b.s_nombre : ''}" oninput="this.value = this.value.toUpperCase()">
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="benef-snombre">Segundo Nombre</label>
-            <input type="text" class="form-control" id="benef-snombre" placeholder="Segundo nombre">
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group">
-            <label class="form-label" for="benef-papellido">Primer Apellido *</label>
-            <input type="text" class="form-control" id="benef-papellido" required placeholder="Primer apellido">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="benef-sapellido">Segundo Apellido</label>
-            <input type="text" class="form-control" id="benef-sapellido" placeholder="Segundo apellido">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="benef-email">Correo Electrónico</label>
-          <input type="email" class="form-control" id="benef-email" placeholder="beneficiario@correo.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="benef-tel">Teléfono</label>
-          <input type="text" class="form-control" id="benef-tel" placeholder="Número de teléfono">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group">
-            <label class="form-label" for="benef-dep">Departamento</label>
-            <select class="form-control" id="benef-dep"></select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group">
+              <label class="form-label" for="benef-papellido">Primer Apellido *</label>
+              <input type="text" class="form-control" id="benef-papellido" required placeholder="Primer apellido" value="${b ? b.p_apellido : ''}" oninput="this.value = this.value.toUpperCase()">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="benef-sapellido">Segundo Apellido</label>
+              <input type="text" class="form-control" id="benef-sapellido" placeholder="Segundo apellido" value="${b && b.s_apellido ? b.s_apellido : ''}" oninput="this.value = this.value.toUpperCase()">
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="benef-mun">Municipio</label>
-            <select class="form-control" id="benef-mun"></select>
+            <label class="form-label" for="benef-email">Correo Electrónico</label>
+            <input type="email" class="form-control" id="benef-email" placeholder="beneficiario@correo.com" value="${b && b.email ? b.email : ''}" oninput="this.value = this.value.toLowerCase()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="benef-tel">Teléfono</label>
+            <input type="text" class="form-control" id="benef-tel" placeholder="Número de teléfono" value="${b && b.telefono ? b.telefono : ''}">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group">
+              <label class="form-label" for="benef-dep">Departamento</label>
+              <select class="form-control" id="benef-dep"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="benef-mun">Municipio</label>
+              <select class="form-control" id="benef-mun"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="benef-prog">Programa Asociado</label>
+            <select class="form-control" id="benef-prog" style="padding-left:1rem">
+              <option value="">Ningún programa...</option>
+              ${progsOpts}
+            </select>
+          </div>
+          
+          <div class="remember-wrap" style="color:var(--white);margin-top:.5rem">
+            <input type="checkbox" id="benef-activo" ${(!b || b.estado === 'activo') ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--green-500)">
+            <label for="benef-activo" style="cursor:pointer;font-size:.875rem">Beneficiario activo</label>
+          </div>
+          <div class="remember-wrap" style="color:var(--white);margin-top:.5rem">
+            <input type="checkbox" id="benef-tratamiento" required ${b && b.tratamiento_datos == 1 ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--green-500);flex-shrink:0;margin-top:4px">
+            <label for="benef-tratamiento" style="cursor:pointer;font-size:.8rem;line-height:1.4;text-align:justify">
+              <strong>Autorización de Tratamiento de Datos Personales *</strong><br>
+              Autorizo de manera libre, previa, expresa e informada a UT COMEXAGRO para la recolección, almacenamiento, uso, circulación y supresión de mis datos personales aquí suministrados, con la finalidad de participar en procesos de postulación, selección y contratación, conforme a la política de tratamiento de datos de la entidad y la Ley 1581 de 2012.
+            </label>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="benef-prog">Programa Asociado</label>
-          <select class="form-control" id="benef-prog" style="padding-left:1rem">
-            <option value="">Ningún programa...</option>
-            ${progsOpts}
-          </select>
+
+        <!-- TAB 2: DOCUMENTOS -->
+        <div id="tab-doc-benef" class="tab-content" style="display:none;flex-direction:column;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" for="benef-doc-file">Documento de Identidad (PDF o Imagen)</label>
+            <input type="file" class="form-control" id="benef-doc-file" accept=".pdf,image/*" style="padding: .5rem">
+            ${b && b.doc_identidad_file ? `<div style="margin-top:.5rem;font-size:.85rem">✓ <a href="/utcomexagro/uploads/beneficiarios/${b.doc_identidad_file}" target="_blank" style="color:var(--green-600);text-decoration:underline;font-weight:600">Ver Archivo Actual</a></div>` : ''}
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="benef-rut-file">RUT (PDF o Imagen)</label>
+            <input type="file" class="form-control" id="benef-rut-file" accept=".pdf,image/*" style="padding: .5rem">
+            ${b && b.rut_file ? `<div style="margin-top:.5rem;font-size:.85rem">✓ <a href="/utcomexagro/uploads/beneficiarios/${b.rut_file}" target="_blank" style="color:var(--green-600);text-decoration:underline;font-weight:600">Ver Archivo Actual</a></div>` : ''}
+          </div>
         </div>
-        <div class="remember-wrap" style="color:var(--white);margin-top:.5rem">
-          <input type="checkbox" id="benef-activo" checked style="width:18px;height:18px;accent-color:var(--green-500)">
-          <label for="benef-activo" style="cursor:pointer;font-size:.875rem">Beneficiario activo</label>
-        </div>
+
         <button type="submit" style="display:none;" id="btn-submit-benef-hidden"></button>
       </form>
-    `, `
+    `;
+
+    showModal(titulo, html, `
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="document.getElementById('btn-submit-benef-hidden').click()">Guardar Beneficiario</button>
-    `);
+    `, true); // isLarge = true
     
     if (typeof loadDepartamentos === 'function') {
       loadDepartamentos('benef-dep');
+      setTimeout(() => {
+        if (b && b.departamento) {
+          document.getElementById('benef-dep').value = b.departamento;
+          const ev = new Event('change');
+          document.getElementById('benef-dep').dispatchEvent(ev);
+        }
+      }, 300);
+      
       loadMunicipios('benef-dep', 'benef-mun');
+      setTimeout(() => {
+        if (b && b.municipio) {
+          document.getElementById('benef-mun').value = b.municipio;
+        }
+      }, 600);
     }
+    
   } catch (err) {
     showToastAdmin('Error al inicializar formulario de beneficiarios.', 'error');
   }
 }
 
-async function guardarBeneficiario(event) {
+async function guardarBeneficiario(event, id = null) {
   event.preventDefault();
 
   const orgId = document.getElementById('benef-org').value;
@@ -301,13 +362,15 @@ async function guardarBeneficiario(event) {
   const municipio = document.getElementById('benef-mun').value.trim();
   const progId = document.getElementById('benef-prog').value;
   const activo = document.getElementById('benef-activo').checked ? 'activo' : 'inactivo';
+  const tratamiento = document.getElementById('benef-tratamiento').checked ? '1' : '0';
 
-  if (!orgId || !tipoDoc || !numDoc || !pNombre || !pApellido) {
+  if (!orgId || !tipoDoc || !numDoc || !pNombre || !pApellido || !tratamiento) {
     showToastAdmin('Por favor complete todos los campos obligatorios.', 'error');
     return;
   }
 
   const fd = new FormData();
+  if (id) fd.append('id', id);
   fd.append('organizacion_id', orgId);
   fd.append('tipo_doc', tipoDoc);
   fd.append('num_doc', numDoc);
@@ -321,18 +384,43 @@ async function guardarBeneficiario(event) {
   fd.append('municipio', municipio);
   fd.append('programa_id', progId);
   fd.append('estado', activo);
+  fd.append('tratamiento_datos', tratamiento);
+
+  const docFile = document.getElementById('benef-doc-file').files[0];
+  if (docFile) fd.append('doc_identidad_file', docFile);
+
+  const rutFile = document.getElementById('benef-rut-file').files[0];
+  if (rutFile) fd.append('rut_file', rutFile);
 
   try {
-    const res = await API.beneficiarios.beneficiarios.create(fd);
+    const url = id ? '/beneficiarios/update.php' : '/beneficiarios/beneficiarios.php';
+    const res = await API.post(url, fd);
+    
     if (res.success) {
-      showToastAdmin('Beneficiario registrado correctamente.');
+      showToastAdmin(id ? 'Beneficiario actualizado correctamente.' : 'Beneficiario registrado correctamente.');
       closeModal();
       loadBeneficiarios();
     } else {
       showToastAdmin(res.message, 'error');
     }
   } catch (err) {
-    showToastAdmin('Error al registrar el beneficiario.', 'error');
+    showToastAdmin('Error al guardar el beneficiario.', 'error');
+  }
+}
+
+async function confirmarEliminarBeneficiario(id, nombre) {
+  if (confirm(`¿Está seguro de inactivar al beneficiario ${nombre}?`)) {
+    try {
+      const res = await API.post('/beneficiarios/delete.php', { id });
+      if (res.success) {
+        showToastAdmin('Beneficiario inactivado con éxito.');
+        loadBeneficiarios();
+      } else {
+        showToastAdmin(res.message, 'error');
+      }
+    } catch (err) {
+      showToastAdmin('Error de conexión al inactivar.', 'error');
+    }
   }
 }
 

@@ -20,6 +20,11 @@ const API = (() => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    if (options.body && !(options.body instanceof FormData) && typeof options.body === 'object') {
+      options.body = JSON.stringify(options.body);
+      headers['Content-Type'] = 'application/json';
+    }
+
     const res = await fetch(`${BASE}${endpoint}`, {
       ...options,
       headers,
