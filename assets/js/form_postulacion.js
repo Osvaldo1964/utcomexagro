@@ -57,19 +57,19 @@ const FormPostulacion = (() => {
               </div>
               <div class="form-group">
                 <label class="form-label">Primer Apellido *</label>
-                <input type="text" name="p_apellido" class="form-control" required>
+                <input type="text" name="p_apellido" class="form-control" oninput="this.value = this.value.toUpperCase()" required>
               </div>
               <div class="form-group">
                 <label class="form-label">Segundo Apellido</label>
-                <input type="text" name="s_apellido" class="form-control">
+                <input type="text" name="s_apellido" class="form-control" oninput="this.value = this.value.toUpperCase()">
               </div>
               <div class="form-group">
                 <label class="form-label">Primer Nombre *</label>
-                <input type="text" name="p_nombre" class="form-control" required>
+                <input type="text" name="p_nombre" class="form-control" oninput="this.value = this.value.toUpperCase()" required>
               </div>
               <div class="form-group">
                 <label class="form-label">Segundo Nombre</label>
-                <input type="text" name="s_nombre" class="form-control">
+                <input type="text" name="s_nombre" class="form-control" oninput="this.value = this.value.toUpperCase()">
               </div>
               <div class="form-group">
                 <label class="form-label">Fecha de Nacimiento</label>
@@ -114,6 +114,12 @@ const FormPostulacion = (() => {
                 </select>
               </div>
               <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label">Cargo al que aplica *</label>
+                <select name="cargo_id" class="form-control" id="form-cargo-public-select" required>
+                  <option value="">Seleccione un cargo...</option>
+                </select>
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
                 <label class="form-label">Especialidad o Experticia *</label>
                 <input type="text" name="especialidad" class="form-control" placeholder="Ej: Agronomía, Logística, Docencia..." required>
               </div>
@@ -130,7 +136,7 @@ const FormPostulacion = (() => {
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label">Correo Electrónico *</label>
-                <input type="email" name="email" class="form-control" required>
+                <input type="email" name="email" class="form-control" oninput="this.value = this.value.toLowerCase()" required>
               </div>
               <div class="form-group">
                 <label class="form-label">Teléfono *</label>
@@ -142,11 +148,11 @@ const FormPostulacion = (() => {
               </div>
               <div class="form-group">
                 <label class="form-label">Departamento</label>
-                <input type="text" name="departamento" class="form-control">
+                <select id="sel_departamento" name="departamento" class="form-control"></select>
               </div>
               <div class="form-group">
                 <label class="form-label">Municipio</label>
-                <input type="text" name="municipio" class="form-control">
+                <select id="sel_municipio" name="municipio" class="form-control"></select>
               </div>
               <div class="form-group">
                 <label class="form-label">Grupo Sanguíneo (RH)</label>
@@ -160,15 +166,15 @@ const FormPostulacion = (() => {
               </div>
               <div class="form-group">
                 <label class="form-label">EPS</label>
-                <input type="text" name="eps" class="form-control">
+                <select id="sel_eps" name="eps" class="form-control"></select>
               </div>
               <div class="form-group">
                 <label class="form-label">Fondo de Pensión (AFP)</label>
-                <input type="text" name="afp" class="form-control">
+                <select id="sel_afp" name="afp" class="form-control"></select>
               </div>
               <div class="form-group">
                 <label class="form-label">ARL</label>
-                <input type="text" name="arl" class="form-control">
+                <select id="sel_arl" name="arl" class="form-control"></select>
               </div>
               <div class="form-group">
                 <label class="form-label">Discapacidad</label>
@@ -244,6 +250,17 @@ const FormPostulacion = (() => {
     if (!container) return;
     container.innerHTML = getHTML(mode);
     await loadOrganizaciones();
+    await loadCargos();
+    
+    if (typeof loadDepartamentos === 'function') {
+      loadDepartamentos('sel_departamento');
+      loadMunicipios('sel_departamento', 'sel_municipio');
+    }
+    if (typeof loadEPS === 'function') {
+      loadEPS('sel_eps');
+      loadAFP('sel_afp');
+      loadARL('sel_arl');
+    }
   };
 
   const loadOrganizaciones = async () => {
@@ -260,6 +277,21 @@ const FormPostulacion = (() => {
         }
       }
     } catch (e) { console.error('Error cargando orgs:', e); }
+  };
+
+  const loadCargos = async () => {
+    try {
+      const res = await fetch(`${apiPath}/cargos/list.php?activos=1`);
+      const json = await res.json();
+      if (json.success) {
+        const select = document.getElementById('form-cargo-public-select');
+        if (select) {
+          json.data.forEach(c => {
+            select.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.nombre}</option>`);
+          });
+        }
+      }
+    } catch (e) { console.error('Error cargando cargos:', e); }
   };
 
   const nextStep = (step) => {
@@ -296,12 +328,29 @@ const FormPostulacion = (() => {
     const form = document.getElementById('form-postulacion');
     
     if (!form.checkValidity()) {
-      form.reportValidity();
+      // Find the first invalid element
+      const firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid) {
+        // Find which step it belongs to
+        const stepContent = firstInvalid.closest('.step-content');
+        if (stepContent) {
+          const stepId = stepContent.id.replace('step-', '');
+          nextStep(parseInt(stepId));
+          
+          // Wait a tick for display:block to apply before focusing
+          setTimeout(() => {
+            firstInvalid.reportValidity();
+            firstInvalid.focus();
+          }, 50);
+        }
+      }
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+    }
 
     const fd = new FormData(form);
 
@@ -327,10 +376,12 @@ const FormPostulacion = (() => {
           if (typeof loadPostuladosData === 'function') loadPostuladosData();
         }
       } else {
-        alert('Error: ' + json.message);
+        const toastFn = typeof showToastAdmin === 'function' ? showToastAdmin : (typeof showToast === 'function' ? showToast : alert);
+        toastFn(json.message, 'error');
       }
     } catch (err) {
-      alert('Error de conexión. Intente nuevamente.');
+      const toastFn = typeof showToastAdmin === 'function' ? showToastAdmin : (typeof showToast === 'function' ? showToast : alert);
+      toastFn('Error de conexión. Verifique su internet e intente nuevamente.', 'error');
     } finally {
       if(btn) { btn.disabled = false; btn.textContent = mode === 'public' ? '🚀 Enviar Postulación' : '💾 Guardar Postulado'; }
     }

@@ -82,3 +82,63 @@ function loadMunicipios(deptoSelectId, munSelectId) {
   // Deshabilitar municipios al inicio
   munSel.disabled = true;
 }
+
+// ============================================================
+// ENTIDADES DE SALUD, PENSIÓN Y RIESGOS (EPS, AFP, ARL)
+// ============================================================
+
+const EPS_COLOMBIA = [
+  "Aliansalud EPS", "Anas Wayuu EPSI", "Asmet Salud", "Capital Salud", 
+  "Capresoca", "Comfenalco Valle", "Compensar", "Coosalud", "Cajacopi",
+  "Dusakawi", "EPM", "EPS Familiar de Colombia", "EPS Sanitas", "EPS Sura", 
+  "Famisanar", "Fuerzas Militares", "Mallamas", "Mutual Ser", "Nueva EPS",
+  "Pijaos Salud", "Policía Nacional", "Salud Total", "Savia Salud",
+  "Régimen Especial", "Otra"
+];
+
+const AFP_COLOMBIA = [
+  "Colpensiones",
+  "Porvenir",
+  "Protección",
+  "Colfondos",
+  "Skandia",
+  "Otra"
+];
+
+const ARL_COLOMBIA = [
+  "ARL Sura",
+  "ARL Bolívar",
+  "ARL Positiva",
+  "ARL Colmena",
+  "ARL Equidad",
+  "ARL Alfa",
+  "ARL Aurora",
+  "Otra"
+];
+
+/**
+ * Llena un <select> con datos de un arreglo estático.
+ * @param {string} selectId - ID del select
+ * @param {Array} dataArray - Arreglo de opciones
+ * @param {string} placeholder - Texto por defecto
+ */
+function loadSelectData(selectId, dataArray, placeholder) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = `<option value="">-- ${placeholder} --</option>`;
+  dataArray.sort().forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    if (item === 'Otra' || item === 'Régimen Especial') {
+      // Put them at the end, wait, sorting is done. Let's just sort natively.
+    }
+    sel.appendChild(opt);
+  });
+}
+
+// Helpers
+const loadEPS = (id) => loadSelectData(id, EPS_COLOMBIA, 'Seleccione EPS');
+const loadAFP = (id) => loadSelectData(id, AFP_COLOMBIA, 'Seleccione AFP');
+const loadARL = (id) => loadSelectData(id, ARL_COLOMBIA, 'Seleccione ARL');
+

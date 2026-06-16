@@ -13,18 +13,16 @@ const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 
 function showToast(message, type = 'success') {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
-    <span>${message}</span>
-  `;
-  document.body.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add('show'));
-  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4500);
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      icon: type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'),
+      title: type === 'success' ? 'Éxito' : (type === 'error' ? 'Error' : 'Atención'),
+      text: message,
+      confirmButtonColor: type === 'success' ? '#22C55E' : '#EF4444'
+    });
+  } else {
+    alert(message);
+  }
 }
 
 /* ================================================================
@@ -140,7 +138,7 @@ function closeModal(overlayId) {
 // Cerrar al clic fuera del modal
 $$('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => {
-    if (e.target === overlay) closeModal(overlay.id);
+    if (e.target === overlay && overlay.id !== 'overlay-postulados') closeModal(overlay.id);
   });
 });
 

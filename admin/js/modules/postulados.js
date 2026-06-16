@@ -4,6 +4,14 @@
 
 // ---- VISTA: POSTULADOS ----
 async function renderPostulados() {
+  if (typeof updateBreadcrumb === 'function') {
+    updateBreadcrumb([
+      { label: '🏠', key: 'dashboard' },
+      { label: 'Contratación', key: 'contratacion' },
+      { label: 'Postulados' }
+    ]);
+  }
+  
   const content = document.getElementById('content');
   content.innerHTML = `
     <div class="module-page">
@@ -274,6 +282,12 @@ function exportPostulados() {
 
 // ---- VISTA: CONTRATACIÓN ----
 function renderContratacion() {
+  if (typeof updateBreadcrumb === 'function') {
+    updateBreadcrumb([
+      { label: '🏠', key: 'dashboard' },
+      { label: 'Contratación' }
+    ]);
+  }
   const content = document.getElementById('content');
   content.innerHTML = `
     <div class="module-page">
@@ -287,13 +301,13 @@ function renderContratacion() {
           <div class="module-desc">Revisar y marcar postulados como Aplica / No Aplica / Seleccionado.</div>
           <div class="module-card-footer"><span class="module-link">Ir a Postulados <span class="module-link-arrow">›</span></span></div>
         </div>
-        <div class="module-card" onclick="alert('Próximamente')">
+        <div class="module-card" onclick="renderGenerarContratos()">
           <div class="module-card-header">
             <div class="module-icon icon-contract">📄</div>
-            <div><div class="module-name">Generación de Contratos</div><span class="badge badge-dev">En desarrollo</span></div>
+            <div><div class="module-name">Generación de Contratos</div><span class="badge badge-active">Activo</span></div>
           </div>
-          <div class="module-desc">Generar contratos automáticos en PDF a partir de minutas predefinidas.</div>
-          <div class="module-card-footer"><span class="module-link">Próximamente <span class="module-link-arrow">›</span></span></div>
+          <div class="module-desc">Generar contratos y registrar empleados a partir de seleccionados.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
         <div class="module-card" onclick="alert('Próximamente')">
           <div class="module-card-header">
@@ -302,6 +316,14 @@ function renderContratacion() {
           </div>
           <div class="module-desc">Gestión de períodos de nómina, liquidaciones y desprendibles.</div>
           <div class="module-card-footer"><span class="module-link">Próximamente <span class="module-link-arrow">›</span></span></div>
+        </div>
+        <div class="module-card" onclick="renderCargos()">
+          <div class="module-card-header">
+            <div class="module-icon icon-config">💼</div>
+            <div><div class="module-name">Cargos Ofertados</div><span class="badge badge-active">Activo</span></div>
+          </div>
+          <div class="module-desc">Definición de cargos disponibles para la postulación y contratos.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
       </div>
     </div>
@@ -324,3 +346,202 @@ function abrirModalPostulacion() {
     }
   }, 100);
 }
+
+// ================================================================
+//  MÓDULO: GENERACIÓN DE CONTRATOS
+// ================================================================
+
+async function renderGenerarContratos() {
+  if (typeof updateBreadcrumb === 'function') {
+    updateBreadcrumb([
+      { label: '🏠', key: 'dashboard' },
+      { label: 'Contratación', key: 'contratacion' },
+      { label: 'Generar Contratos' }
+    ]);
+  }
+
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="module-page">
+      <div class="module-page-header">
+        <div class="module-page-title">📄 Postulados Seleccionados</div>
+        <div class="module-page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="renderContratacion()">↩️ Volver</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="table-search">
+            🔍 <input type="text" placeholder="Buscar postulado..." id="search-seleccionados" oninput="filterSeleccionados()">
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Nombre Completo</th>
+                <th>Especialidad / Cargo</th>
+                <th>Contacto</th>
+                <th>Ubicación</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="seleccionados-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-400)">
+                <div class="spinner-inline"></div> Cargando postulados seleccionados...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  await loadSeleccionadosData();
+}
+
+async function loadSeleccionadosData() {
+  try {
+    const res = await API.get('/contratacion/postulados_seleccionados.php');
+    if (res.success) {
+      window.allSeleccionados = res.data;
+      renderSeleccionadosTable(res.data);
+    } else {
+      document.getElementById('seleccionados-tbody').innerHTML = 
+        `<tr><td colspan="6" style="text-align:center;color:var(--danger)">Error: ${res.message}</td></tr>`;
+    }
+  } catch (err) {
+    document.getElementById('seleccionados-tbody').innerHTML = 
+      `<tr><td colspan="6" style="text-align:center;color:var(--danger)">Error al conectar con el servidor.</td></tr>`;
+  }
+}
+
+function renderSeleccionadosTable(data) {
+  const tbody = document.getElementById('seleccionados-tbody');
+  if (!tbody) return;
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:2rem">No hay postulados en estado seleccionado.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(p => {
+    const nombreCompleto = `${p.p_nombre} ${p.s_nombre||''} ${p.p_apellido} ${p.s_apellido||''}`.replace(/\s+/g, ' ');
+    return `
+      <tr>
+        <td><strong>${p.num_doc}</strong></td>
+        <td><strong>${nombreCompleto}</strong></td>
+        <td>${p.especialidad || 'Sin definir'}</td>
+        <td style="font-size:0.85rem">📞 ${p.telefono || '-'}<br>📧 ${p.email || '-'}</td>
+        <td style="font-size:0.85rem">${p.municipio || '-'}, ${p.departamento || '-'}</td>
+        <td>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalContrato(${p.id}, '${nombreCompleto.replace(/'/g, "\\'")}')">📝 Generar Contrato</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterSeleccionados() {
+  const search = document.getElementById('search-seleccionados').value.toLowerCase();
+  const data = window.allSeleccionados || [];
+  const filtered = data.filter(p => {
+    const text = `${p.num_doc} ${p.p_nombre} ${p.p_apellido} ${p.especialidad}`.toLowerCase();
+    return text.includes(search);
+  });
+  renderSeleccionadosTable(filtered);
+}
+
+function abrirModalContrato(id, nombre) {
+  const formHtml = `
+    <form id="form-contrato" onsubmit="guardarContrato(event, ${id})">
+      <div style="margin-bottom:1rem;color:var(--gray-300);font-size:0.95rem;">
+        Se generará contrato para: <strong style="color:var(--white)">${nombre}</strong>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Fecha de Inicio *</label>
+          <input type="date" id="cont-inicio" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de Finalización</label>
+          <input type="date" id="cont-fin" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor del Contrato (Mensual) *</label>
+          <input type="number" id="cont-valor" class="form-control" required placeholder="Ej: 1500000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Forma de Pago *</label>
+          <select id="cont-forma-pago" class="form-control" required>
+            <option value="">Seleccione...</option>
+            <option value="Mensual">Mensual</option>
+            <option value="Quincenal">Quincenal</option>
+            <option value="Por horas">Por horas</option>
+            <option value="Por obra/labor">Por obra/labor</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Cargo Asignado *</label>
+          <select id="cont-cargo" class="form-control" required>
+            <option value="">Cargando cargos...</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" style="display:none;" id="btn-submit-contrato-hidden"></button>
+    </form>
+  `;
+
+  const footerHtml = `
+    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('btn-submit-contrato-hidden').click()">Guardar y Generar</button>
+  `;
+
+  showModal('Generar Nuevo Contrato', formHtml, footerHtml);
+
+  // Cargar cargos dinámicamente
+  API.get('/cargos/list.php?activos=1').then(res => {
+    const select = document.getElementById('cont-cargo');
+    if (res.success && select) {
+      select.innerHTML = '<option value="">Seleccione un cargo...</option>' +
+        res.data.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+    } else if (select) {
+      select.innerHTML = '<option value="">Error al cargar cargos</option>';
+    }
+  }).catch(() => {
+    const select = document.getElementById('cont-cargo');
+    if (select) select.innerHTML = '<option value="">Error de conexión</option>';
+  });
+}
+
+async function guardarContrato(e, postuladoId) {
+  e.preventDefault();
+  const btn = document.querySelector('.modal-admin-footer .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Generando PDF y correo...'; }
+
+  const fd = new FormData();
+  fd.append('postulado_id', postuladoId);
+  fd.append('fecha_inicio', document.getElementById('cont-inicio').value);
+  fd.append('fecha_fin', document.getElementById('cont-fin').value);
+  fd.append('valor_mensual', document.getElementById('cont-valor').value);
+  fd.append('forma_pago', document.getElementById('cont-forma-pago').value);
+  fd.append('cargo', document.getElementById('cont-cargo').value);
+
+  try {
+    const res = await API.post('/contratacion/generar_contrato.php', fd);
+    if (res.success) {
+      showToastAdmin('Contrato ' + res.numero_contrato + ' generado con éxito.');
+      closeModal();
+      loadSeleccionadosData(); // Refrescar tabla, el postulado debe desaparecer
+    } else {
+      showToastAdmin(res.message, 'error');
+    }
+  } catch (err) {
+    showToastAdmin('Error al conectar con el servidor.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Guardar y Generar'; }
+  }
+}
+

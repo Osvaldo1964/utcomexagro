@@ -282,19 +282,49 @@
     <div class="conv-inner" data-anim>
       <span class="section-label" style="color:var(--amber-300)">Convocatoria 2024</span>
       <h2 class="conv-title">
-        Registro de <span>Postulados</span>
+        ¿Quieres hacer parte de<br>
+        <span>UT COMEXAGRO</span>?
       </h2>
       <p class="conv-desc">
-        Diligencia tu información personal, académica y adjunta los documentos 
-        requeridos para participar en nuestra convocatoria y hacer parte del equipo UT COMEXAGRO.
+        Buscamos profesionales, técnicos y promotores comprometidos con
+        el desarrollo del campo colombiano. ¡Postúlate ahora!
       </p>
     </div>
 
-    <!-- Contenedor del formulario público -->
-    <div class="form-card" style="max-width: 900px; margin: 2rem auto; background: var(--clr-white); border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-      <div id="public-form-container"></div>
-    </div>
+    <div class="cta-cards">
+      <!-- Registro de Postulados -->
+      <div class="cta-card green-card" onclick="openModal('overlay-postulados')" id="cta-postulados" role="button" tabindex="0">
+        <div class="cta-card-icon">👤</div>
+        <h3 class="cta-card-title">Registro de Postulados</h3>
+        <p class="cta-card-desc">
+          Diligencia tu información personal, académica y adjunta los documentos
+          requeridos para participar en nuestra convocatoria.
+        </p>
+        <button class="cta-card-btn">Postularme ahora →</button>
+      </div>
 
+      <!-- Radicar PQR -->
+      <div class="cta-card amber-card" onclick="openModal('overlay-pqr')" id="cta-pqr" role="button" tabindex="0">
+        <div class="cta-card-icon">📋</div>
+        <h3 class="cta-card-title">Radicar PQR</h3>
+        <p class="cta-card-desc">
+          ¿Tienes una Petición, Queja, Reclamo o Sugerencia? Comunícate
+          con nosotros de manera formal y recibirás respuesta oportuna.
+        </p>
+        <button class="cta-card-btn">Radicar ahora →</button>
+      </div>
+
+      <!-- Sistema Admin -->
+      <div class="cta-card blue-card" onclick="location.href='login.html'" id="cta-sistema" role="button" tabindex="0">
+        <div class="cta-card-icon">🔐</div>
+        <h3 class="cta-card-title">Sistema Administrativo</h3>
+        <p class="cta-card-desc">
+          Acceso exclusivo para personal autorizado de UT COMEXAGRO al
+          sistema de gestión interna y administrativo.
+        </p>
+        <button class="cta-card-btn">Acceder →</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -364,7 +394,7 @@
       <div class="footer-col">
         <p class="footer-col-title">Acciones</p>
         <ul>
-          <li><a href="#convocatoria">Registro Postulados</a></li>
+          <li><a href="#" onclick="openModal('overlay-postulados')">Registro Postulados</a></li>
           <li><a href="#" onclick="openModal('overlay-pqr')">Radicar PQR</a></li>
           <li><a href="login.html">Sistema Admin</a></li>
         </ul>
@@ -521,7 +551,32 @@
   </div>
 </div><!-- /overlay-pqr -->
 
+<!-- ================================================================
+     MODAL: REGISTRO DE POSTULADOS
+     ================================================================ -->
+<div class="modal-overlay" id="overlay-postulados" role="dialog" aria-modal="true" aria-label="Registro de Postulados">
+  <div class="modal modal-lg">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="modal-header-info">
+        <div class="modal-header-icon">👤</div>
+        <div>
+          <div class="modal-title">Registro de Postulados</div>
+          <div class="modal-subtitle">Convocatoria UT COMEXAGRO 2024 – Complete todos los campos requeridos</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('overlay-postulados')" aria-label="Cerrar">✕</button>
+    </div>
+
+    <!-- Cuerpo: Formulario Stepper -->
+    <div class="modal-body" style="padding: 1.5rem">
+      <div id="public-form-container"></div>
+    </div>
+  </div>
+</div><!-- /overlay-postulados -->
+
 <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="assets/js/colombia-data.js"></script>
 <script src="assets/js/form_postulacion.js?v=2"></script>
 <script src="assets/js/main.js?v=2"></script>

@@ -27,17 +27,7 @@ const MODULES = [
     badgeClass: 'badge-active',
     iconClass: 'icon-config',
   },
-  {
-    key: 'postulados',
-    label: 'Postulados',
-    icon: '👤',
-    desc: 'Gestión de personas registradas en la convocatoria',
-    section: 'gestion',
-    permiso: 'postulados.leer',
-    badgeText: 'Activo',
-    badgeClass: 'badge-active',
-    iconClass: 'icon-people',
-  },
+
   {
     key: 'contratacion',
     label: 'Contratación',
@@ -60,17 +50,7 @@ const MODULES = [
     badgeClass: 'badge-active',
     iconClass: 'icon-people',
   },
-  {
-    key: 'organizaciones',
-    label: 'Organizaciones',
-    icon: '🏢',
-    desc: 'Gestión de organizaciones y entidades',
-    section: 'gestion',
-    permiso: 'configuracion.usuarios', // Usamos el mismo nivel por ahora, o ajustamos
-    badgeText: 'Activo',
-    badgeClass: 'badge-active',
-    iconClass: 'icon-inventory',
-  },
+
   {
     key: 'presupuesto',
     label: 'Presupuesto',
@@ -416,23 +396,16 @@ function closeModal() {
 //  TOAST ADMIN
 // ================================================================
 function showToastAdmin(msg, type = 'success') {
-  const existing = document.querySelector('.admin-toast');
-  if (existing) existing.remove();
-  const t = document.createElement('div');
-  t.className = `admin-toast admin-toast-${type}`;
-  t.style.cssText = `
-    position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;
-    background:${type==='error'?'#1F2937':'#064E3B'};
-    color:#fff;padding:.75rem 1.25rem;border-radius:10px;
-    font-size:.875rem;font-weight:500;display:flex;gap:.5rem;align-items:center;
-    box-shadow:0 8px 24px rgba(0,0,0,.3);
-    border-left:4px solid ${type==='error'?'#DC2626':'#22C55E'};
-    transform:translateY(60px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);
-  `;
-  t.innerHTML = `<span>${type==='error'?'❌':'✅'}</span><span>${msg}</span>`;
-  document.body.appendChild(t);
-  requestAnimationFrame(() => { t.style.transform='translateY(0)';t.style.opacity='1'; });
-  setTimeout(()=>{ t.style.opacity='0';t.style.transform='translateY(60px)'; setTimeout(()=>t.remove(),400); }, 4000);
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      icon: type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'),
+      title: type === 'success' ? 'Éxito' : (type === 'error' ? 'Error' : 'Atención'),
+      text: msg,
+      confirmButtonColor: type === 'success' ? '#22C55E' : '#EF4444'
+    });
+  } else {
+    alert(msg);
+  }
 }
 
 // ================================================================

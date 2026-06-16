@@ -18,14 +18,16 @@ function renderBeneficiariosMenu() {
           <div class="module-desc">Gestionar categorías de organizaciones (Acuícola, Avícola, Bovinos, etc.).</div>
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
-        <div class="module-card" onclick="loadOrganizaciones()">
+
+        <div class="module-card" onclick="renderOrganizaciones()">
           <div class="module-card-header">
             <div class="module-icon icon-config">🏢</div>
             <div><div class="module-name">Organizaciones</div><span class="badge badge-active">Activo</span></div>
           </div>
-          <div class="module-desc">Registrar y gestionar organizaciones, representaciones legales y cupos.</div>
+          <div class="module-desc">Registrar y gestionar organizaciones a las que pertenecen los beneficiarios.</div>
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
+
         <div class="module-card" onclick="loadBeneficiarios()">
           <div class="module-card-header">
             <div class="module-icon icon-people">👥</div>
@@ -39,227 +41,7 @@ function renderBeneficiariosMenu() {
   `;
 }
 
-// ---- ORGANIZACIONES ----
-async function loadOrganizaciones() {
-  updateBreadcrumb([
-    { label: '🏠', key: 'dashboard' },
-    { label: 'Beneficiarios', key: 'beneficiarios' },
-    { label: 'Organizaciones' }
-  ]);
-  const content = document.getElementById('content');
-  content.innerHTML = `
-    <div class="module-page">
-      <div class="module-page-header">
-        <div class="module-page-title">🏢 Gestión de Organizaciones</div>
-        <div class="module-page-actions">
-          <button class="btn btn-primary btn-sm" onclick="abrirModalOrganizacion()">➕ Agregar Organización</button>
-          <button class="btn btn-secondary btn-sm" onclick="navigateTo('beneficiarios')">↩️ Volver</button>
-        </div>
-      </div>
 
-      <div class="table-card">
-        <div class="table-toolbar">
-          <div class="table-search">
-            🔍 <input type="text" placeholder="Buscar por nombre, NIT o rep. legal..." id="search-orgs" oninput="filterOrganizaciones()">
-          </div>
-        </div>
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>NIT</th>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Rep. Legal</th>
-                <th>Contacto</th>
-                <th>Ubicación</th>
-                <th>Beneficiarios (Cupo)</th>
-                <th>Fecha Registro</th>
-              </tr>
-            </thead>
-            <tbody id="orgs-tbody">
-              <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray-400)">
-                <div class="spinner-inline"></div> Cargando organizaciones...
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `;
-
-  try {
-    const res = await API.beneficiarios.organizaciones.list();
-    if (res.success) {
-      window.allOrganizaciones = res.data;
-      renderOrganizacionesTable(res.data);
-    } else {
-      document.getElementById('orgs-tbody').innerHTML = 
-        `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--danger)">Error: ${res.message}</td></tr>`;
-    }
-  } catch (err) {
-    document.getElementById('orgs-tbody').innerHTML = 
-      `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--danger)">Error de conexión con el servidor.</td></tr>`;
-  }
-}
-
-function renderOrganizacionesTable(data) {
-  const tbody = document.getElementById('orgs-tbody');
-  if (!tbody) return;
-
-  if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray-400)">No se encontraron organizaciones.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = data.map(o => {
-    const limit = parseInt(o.max_beneficiarios, 10);
-    const actual = parseInt(o.total_beneficiarios_actual, 10) || 0;
-    const cupoText = limit > 0 ? `${actual} / ${limit}` : `${actual} / Ilimitado`;
-    const isFull = limit > 0 && actual >= limit;
-    const cupoClass = isFull ? 'badge-no_aplica' : 'badge-aplica';
-
-    return `
-      <tr>
-        <td><strong>${o.nit}</strong></td>
-        <td><strong>${o.nombre}</strong></td>
-        <td><span class="badge" style="background:var(--gray-800);border:1px solid var(--gray-700);color:var(--green-300)">${o.tipo_nombre || 'Sin Tipo'}</span></td>
-        <td>${o.rep_legal || '–'}</td>
-        <td style="font-size:.8rem;text-align:left;">
-          📞 ${o.telefono || '–'}<br>
-          📧 ${o.email || '–'}<br>
-          📍 ${o.direccion || '–'}
-        </td>
-        <td style="font-size:.8rem">${o.municipio || '–'}, ${o.departamento || '–'}</td>
-        <td><span class="badge ${cupoClass}">${cupoText}</span></td>
-        <td style="font-size:.78rem;color:var(--gray-400)">${formatDate(o.created_at)}</td>
-      </tr>
-    `;
-  }).join('');
-}
-
-function filterOrganizaciones() {
-  const search = (document.getElementById('search-orgs')?.value || '').toLowerCase();
-  let filtered = window.allOrganizaciones || [];
-  if (search) {
-    filtered = filtered.filter(o => 
-      `${o.nombre} ${o.nit} ${o.rep_legal || ''} ${o.email || ''}`.toLowerCase().includes(search)
-    );
-  }
-  renderOrganizacionesTable(filtered);
-}
-
-async function abrirModalOrganizacion() {
-  try {
-    const resTipos = await API.beneficiarios.tipos.list();
-    if (!resTipos.success) {
-      showToastAdmin('Error al cargar tipos de organización: ' + resTipos.message, 'error');
-      return;
-    }
-    const tipos = resTipos.data;
-    const tiposOpts = tipos.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
-
-    showModal('Crear Nueva Organización', `
-      <form id="form-crear-org" onsubmit="guardarOrganizacion(event)" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1rem 1.5rem;text-align:left;">
-        <div class="form-group">
-          <label class="form-label" for="org-nit">NIT *</label>
-          <input type="text" class="form-control" id="org-nit" required placeholder="800.123.456-7">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-nombre">Nombre de la Organización *</label>
-          <input type="text" class="form-control" id="org-nombre" required placeholder="Asociación de Productores">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-tipo">Tipo de Organización *</label>
-          <select class="form-control" id="org-tipo" required style="padding-left:1rem">
-            <option value="">Seleccione un tipo...</option>
-            ${tiposOpts}
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-rep">Representante Legal</label>
-          <input type="text" class="form-control" id="org-rep" placeholder="Nombre completo">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-dir">Dirección</label>
-          <input type="text" class="form-control" id="org-dir" placeholder="Dirección física">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-tel">Teléfono</label>
-          <input type="text" class="form-control" id="org-tel" placeholder="Número de contacto">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-email">Correo Electrónico</label>
-          <input type="email" class="form-control" id="org-email" placeholder="contacto@organizacion.org">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-max">Máximo de Beneficiarios *</label>
-          <input type="number" class="form-control" id="org-max" value="50" min="0" required placeholder="0 para ilimitado">
-          <small style="color:var(--gray-500);font-size:.7rem;display:block;margin-top:.15rem">Establece 0 para cupo ilimitado.</small>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-dep">Departamento</label>
-          <input type="text" class="form-control" id="org-dep" placeholder="Ej: Antioquia">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="org-mun">Municipio</label>
-          <input type="text" class="form-control" id="org-mun" placeholder="Ej: Medellín">
-        </div>
-        <button type="submit" style="display:none;" id="btn-submit-org-hidden"></button>
-      </form>
-    `, `
-      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="document.getElementById('btn-submit-org-hidden').click()">Guardar Organización</button>
-    `, true);
-  } catch (err) {
-    showToastAdmin('Error al abrir formulario de organizaciones.', 'error');
-  }
-}
-
-async function guardarOrganizacion(event) {
-  event.preventDefault();
-
-  const nit = document.getElementById('org-nit').value.trim();
-  const nombre = document.getElementById('org-nombre').value.trim();
-  const tipo_id = document.getElementById('org-tipo').value;
-  const rep_legal = document.getElementById('org-rep').value.trim();
-  const direccion = document.getElementById('org-dir').value.trim();
-  const telefono = document.getElementById('org-tel').value.trim();
-  const email = document.getElementById('org-email').value.trim();
-  const departamento = document.getElementById('org-dep').value.trim();
-  const municipio = document.getElementById('org-mun').value.trim();
-  const max_beneficiarios = document.getElementById('org-max').value;
-
-  if (!nit || !nombre || !tipo_id) {
-    showToastAdmin('El NIT, Nombre y Tipo de Organización son obligatorios.', 'error');
-    return;
-  }
-
-  const fd = new FormData();
-  fd.append('nit', nit);
-  fd.append('nombre', nombre);
-  fd.append('tipo_id', tipo_id);
-  fd.append('rep_legal', rep_legal);
-  fd.append('direccion', direccion);
-  fd.append('telefono', telefono);
-  fd.append('email', email);
-  fd.append('departamento', departamento);
-  fd.append('municipio', municipio);
-  fd.append('max_beneficiarios', max_beneficiarios);
-
-  try {
-    const res = await API.beneficiarios.organizaciones.create(fd);
-    if (res.success) {
-      showToastAdmin('Organización registrada correctamente.');
-      closeModal();
-      loadOrganizaciones();
-    } else {
-      showToastAdmin(res.message, 'error');
-    }
-  } catch (err) {
-    showToastAdmin('Error al registrar la organización.', 'error');
-  }
-}
 
 // ---- BENEFICIARIOS ----
 async function loadBeneficiarios() {
@@ -469,11 +251,11 @@ async function abrirModalBeneficiario() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div class="form-group">
             <label class="form-label" for="benef-dep">Departamento</label>
-            <input type="text" class="form-control" id="benef-dep" placeholder="Departamento">
+            <select class="form-control" id="benef-dep"></select>
           </div>
           <div class="form-group">
             <label class="form-label" for="benef-mun">Municipio</label>
-            <input type="text" class="form-control" id="benef-mun" placeholder="Municipio">
+            <select class="form-control" id="benef-mun"></select>
           </div>
         </div>
         <div class="form-group">
@@ -493,6 +275,11 @@ async function abrirModalBeneficiario() {
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="document.getElementById('btn-submit-benef-hidden').click()">Guardar Beneficiario</button>
     `);
+    
+    if (typeof loadDepartamentos === 'function') {
+      loadDepartamentos('benef-dep');
+      loadMunicipios('benef-dep', 'benef-mun');
+    }
   } catch (err) {
     showToastAdmin('Error al inicializar formulario de beneficiarios.', 'error');
   }

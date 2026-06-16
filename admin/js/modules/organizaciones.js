@@ -3,6 +3,14 @@
 // ============================================================
 
 async function renderOrganizaciones() {
+  if (typeof updateBreadcrumb === 'function') {
+    updateBreadcrumb([
+      { label: '🏠', key: 'dashboard' },
+      { label: 'Beneficiarios', key: 'beneficiarios' },
+      { label: 'Organizaciones' }
+    ]);
+  }
+
   const content = document.getElementById('content');
   content.innerHTML = `
     <div class="module-page">
@@ -10,6 +18,7 @@ async function renderOrganizaciones() {
         <div class="module-page-title">🏢 Organizaciones Autorizadas</div>
         <div class="module-page-actions">
           <button class="btn btn-primary btn-sm" onclick="abrirModalOrganizacion()">+ Nueva Organización</button>
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('beneficiarios')">↩️ Volver</button>
         </div>
       </div>
 
@@ -135,11 +144,11 @@ function abrirModalOrganizacion(org = null) {
         </div>
         <div class="form-group">
           <label class="form-label">Departamento</label>
-          <input type="text" id="org-depto" class="form-control" value="${org?.departamento || ''}">
+          <select id="org-depto" class="form-control"></select>
         </div>
         <div class="form-group">
           <label class="form-label">Municipio</label>
-          <input type="text" id="org-mun" class="form-control" value="${org?.municipio || ''}">
+          <select id="org-mun" class="form-control"></select>
         </div>
         <div class="form-group">
           <label class="form-label">Estado</label>
@@ -149,20 +158,42 @@ function abrirModalOrganizacion(org = null) {
           </select>
         </div>
       </div>
-      <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;gap:1rem">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btn-save-org">Guardar</button>
-      </div>
+      <button type="submit" style="display:none;" id="btn-save-org-hidden"></button>
     </form>
   `;
-  showModal(title, formHtml);
+  
+  const footerHtml = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="document.getElementById('btn-save-org-hidden').click()">Guardar Organización</button>
+  `;
+
+  showModal(title, formHtml, footerHtml, true);
+  
+  if (typeof loadDepartamentos === 'function') {
+    loadDepartamentos('org-depto');
+    loadMunicipios('org-depto', 'org-mun');
+    
+    if (org && org.departamento) {
+      const deptoSel = document.getElementById('org-depto');
+      deptoSel.value = org.departamento;
+      deptoSel.dispatchEvent(new Event('change'));
+      
+      if (org.municipio) {
+        const munSel = document.getElementById('org-mun');
+        // El cambio es asincrono en UI pero sincronico en JS, podemos setearlo directamente
+        munSel.value = org.municipio;
+      }
+    }
+  }
 }
 
 async function guardarOrganizacion(e, id) {
   e.preventDefault();
-  const btn = document.getElementById('btn-save-org');
-  btn.disabled = true;
-  btn.textContent = 'Guardando...';
+  const btn = document.querySelector('.modal-admin-footer .btn-primary');
+  if(btn) {
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+  }
 
   const fd = new FormData();
   if (id) fd.append('id', id);
@@ -190,8 +221,11 @@ async function guardarOrganizacion(e, id) {
   } catch (err) {
     showToastAdmin('Error de conexión', 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Guardar';
+    const btn = document.querySelector('.modal-admin-footer .btn-primary');
+    if(btn) {
+      btn.disabled = false;
+      btn.textContent = 'Guardar Organización';
+    }
   }
 }
 
