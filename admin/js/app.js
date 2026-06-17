@@ -173,8 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const user = Auth.getUser();
   renderUserInfo(user);
-  renderSidebarNav(user);
-  initSidebar();
   initTopbar(user);
   startClock();
 
@@ -188,51 +186,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// ---- Render usuario en sidebar ----
+// ---- Render usuario en topbar ----
 function renderUserInfo(user) {
   const initial = (user.nombre || 'U')[0].toUpperCase();
-  document.getElementById('sidebar-avatar-initial').textContent  = initial;
-  document.getElementById('sidebar-user-name').textContent       = user.nombre;
-  document.getElementById('sidebar-user-rol').textContent        = user.rol;
   document.getElementById('topbar-avatar-initial').textContent   = initial;
   document.getElementById('topbar-user-name').textContent        = user.nombre.split(' ')[0];
   document.getElementById('topbar-user-rol').textContent         = user.rol;
-}
-
-// ---- Render nav del sidebar según permisos ----
-function renderSidebarNav(user) {
-  const nav = document.getElementById('sidebar-nav');
-  nav.innerHTML = '';
-
-  const sections = {
-    general: 'General',
-    gestion: 'Gestión',
-    admin:   'Administración',
-    sistema: 'Sistema',
-  };
-
-  Object.entries(sections).forEach(([key, label]) => {
-    const items = MODULES.filter(m => m.section === key && canSeeModule(m, user));
-    if (!items.length) return;
-
-    const sectionEl = document.createElement('div');
-    sectionEl.innerHTML = `<div class="nav-section-label">${label}</div>`;
-    items.forEach(mod => {
-      const item = document.createElement('div');
-      item.className = 'nav-item';
-      item.dataset.module = mod.key;
-      item.dataset.tooltip = mod.label;
-      item.innerHTML = `
-        <span class="nav-item-icon">${mod.icon}</span>
-        <span class="nav-item-label">${mod.label}</span>`;
-      item.addEventListener('click', () => {
-        window.location.hash = mod.key;
-        closeMobileSidebar();
-      });
-      sectionEl.appendChild(item);
-    });
-    nav.appendChild(sectionEl);
-  });
 }
 
 function canSeeModule(mod, user) {
@@ -244,11 +203,6 @@ function canSeeModule(mod, user) {
 // ---- Navegación SPA ----
 function navigateTo(moduleKey) {
   currentModule = moduleKey;
-
-  // Actualizar sidebar
-  document.querySelectorAll('.nav-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.module === moduleKey);
-  });
 
   // Breadcrumb
   updateBreadcrumb();
@@ -299,22 +253,29 @@ function renderDashboard() {
       </div>
 
       <!-- Stats -->
-      <div class="stats-row" id="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon green">👤</div>
-          <div><div class="stat-value" id="stat-postulados">–</div><div class="stat-label">Postulados registrados</div></div>
+      <div class="stats-row" id="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="stat-card" style="border-left: 4px solid var(--emerald-500)">
+          <div class="stat-icon green">👥</div>
+          <div><div class="stat-value" id="stat-benef">...</div><div class="stat-label">Beneficiarios Activos</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon amber">⭐</div>
-          <div><div class="stat-value" id="stat-seleccionados">–</div><div class="stat-label">Seleccionados</div></div>
+        <div class="stat-card" style="border-left: 4px solid var(--blue-600)">
+          <div class="stat-icon blue">🏢</div>
+          <div><div class="stat-value" id="stat-orgs">...</div><div class="stat-label">Organizaciones Totales</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon blue">📋</div>
-          <div><div class="stat-value" id="stat-contratos">–</div><div class="stat-label">Contratos activos</div></div>
+        <div class="stat-card" style="border-left: 4px solid var(--amber-500)">
+          <div class="stat-icon amber">🤝</div>
+          <div><div class="stat-value" id="stat-terceros">...</div><div class="stat-label">Terceros (Proveedores)</div></div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="border-left: 4px solid var(--red-500)">
           <div class="stat-icon red">📩</div>
-          <div><div class="stat-value" id="stat-pqrs">–</div><div class="stat-label">PQRS (Total / Resueltas)</div></div>
+          <div><div class="stat-value" id="stat-pqrs">...</div><div class="stat-label">PQRS (Total / Resueltas)</div></div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--teal-700)">
+          <div class="stat-icon" style="background: var(--teal-50); color: var(--teal-700)">🧮</div>
+          <div>
+            <div class="stat-value" id="stat-presupuesto" style="font-size: 1.25rem;">...</div>
+            <div class="stat-label">Ejecución Presupuestal</div>
+          </div>
         </div>
       </div>
 
@@ -348,10 +309,31 @@ async function loadDashboardStats() {
     const res = await API.get('/dashboard/stats.php');
     if (res.success) {
       const d = res.data;
-      if (document.getElementById('stat-postulados'))   document.getElementById('stat-postulados').textContent   = d.postulados   ?? 0;
-      if (document.getElementById('stat-seleccionados'))document.getElementById('stat-seleccionados').textContent = d.seleccionados ?? 0;
-      if (document.getElementById('stat-contratos'))    document.getElementById('stat-contratos').textContent    = d.contratos    ?? 0;
-      if (document.getElementById('stat-pqrs'))         document.getElementById('stat-pqrs').textContent         = `${d.pqrs_total ?? 0} / ${d.pqrs_resueltas ?? 0}`;
+      if (document.getElementById('stat-benef'))    document.getElementById('stat-benef').textContent    = d.beneficiarios_activos ?? 0;
+      if (document.getElementById('stat-orgs'))     document.getElementById('stat-orgs').textContent     = d.organizaciones ?? 0;
+      if (document.getElementById('stat-terceros')) document.getElementById('stat-terceros').textContent = d.terceros ?? 0;
+      if (document.getElementById('stat-pqrs'))     document.getElementById('stat-pqrs').textContent     = `${d.pqrs_total ?? 0} / ${d.pqrs_resueltas ?? 0}`;
+      
+      if (document.getElementById('stat-presupuesto')) {
+        const total = d.presupuesto_total ?? 0;
+        const ejecutado = d.presupuesto_ejecutado ?? 0;
+        
+        const fmtTotal = new Intl.NumberFormat('es-CO', { notation: "compact", compactDisplay: "short", style: 'currency', currency: 'COP' }).format(total);
+        const fmtEjec = new Intl.NumberFormat('es-CO', { notation: "compact", compactDisplay: "short", style: 'currency', currency: 'COP' }).format(ejecutado);
+        
+        let percentDisplay = "0";
+        if (total > 0) {
+          const percentCalc = (ejecutado / total) * 100;
+          if (percentCalc > 0 && percentCalc < 0.1) {
+            percentDisplay = "< 0.1";
+          } else {
+            percentDisplay = percentCalc.toFixed(1);
+            if (percentDisplay.endsWith('.0')) percentDisplay = percentDisplay.slice(0, -2);
+          }
+        }
+
+        document.getElementById('stat-presupuesto').innerHTML = `<span style="color:var(--teal-700)">${fmtEjec}</span> <span style="font-size:0.9rem;color:var(--gray-500);font-weight:normal">de ${fmtTotal} (${percentDisplay}%)</span>`;
+      }
     }
   } catch { /* silencioso */ }
 }
@@ -371,39 +353,6 @@ function renderComingSoon(mod) {
       </div>
     </div>
   `;
-}
-
-// ================================================================
-//  SIDEBAR – collapse / mobile
-// ================================================================
-function initSidebar() {
-  const sidebar   = document.getElementById('sidebar');
-  const toggleBtn = document.getElementById('sidebar-toggle');
-
-  // Toggle colapso
-  toggleBtn?.addEventListener('click', () => {
-    const collapsed = sidebar.classList.toggle('collapsed');
-    toggleBtn.textContent = collapsed ? '›' : '‹';
-    localStorage.setItem('sidebar_collapsed', collapsed ? '1' : '0');
-  });
-
-  // Restaurar estado guardado
-  if (localStorage.getItem('sidebar_collapsed') === '1') {
-    sidebar.classList.add('collapsed');
-    if (toggleBtn) toggleBtn.textContent = '›';
-  }
-
-  // Hamburguesa móvil
-  document.getElementById('topbar-hamburger')?.addEventListener('click', () => {
-    sidebar.classList.toggle('mobile-open');
-  });
-
-  // Cerrar al clic fuera en móvil
-  document.getElementById('content')?.addEventListener('click', closeMobileSidebar);
-}
-
-function closeMobileSidebar() {
-  document.getElementById('sidebar')?.classList.remove('mobile-open');
 }
 
 // ================================================================

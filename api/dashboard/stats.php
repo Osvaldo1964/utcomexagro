@@ -11,30 +11,25 @@ $pdo = Database::getConnection();
 
 $stats = [];
 
-// Total postulados
-$stats['postulados'] = (int)$pdo->query("SELECT COUNT(*) FROM postulados")->fetchColumn();
+// Beneficiarios
+$stats['beneficiarios_activos'] = (int)$pdo->query("SELECT COUNT(*) FROM beneficiarios WHERE estado='activo'")->fetchColumn();
 
-// Seleccionados
-$stats['seleccionados'] = (int)$pdo->query("SELECT COUNT(*) FROM postulados WHERE estado_evaluacion='seleccionado'")->fetchColumn();
+// Organizaciones
+$stats['organizaciones'] = (int)$pdo->query("SELECT COUNT(*) FROM organizaciones")->fetchColumn();
 
-// Contratos activos
-$stats['contratos'] = (int)$pdo->query("SELECT COUNT(*) FROM contratos WHERE estado='activo'")->fetchColumn();
+// Terceros
+$stats['terceros'] = (int)$pdo->query("SELECT COUNT(*) FROM terceros")->fetchColumn();
+
+// Presupuesto Oficial (Sumamos los nodos hoja para evitar doble conteo)
+$presupuesto = $pdo->query("SELECT SUM(valor_total) as total, SUM(valor_ejecutado) as ejecutado FROM presupuesto_rubros WHERE id NOT IN (SELECT DISTINCT parent_id FROM presupuesto_rubros WHERE parent_id IS NOT NULL)")->fetch();
+$stats['presupuesto_total'] = (float)($presupuesto['total'] ?? 0);
+$stats['presupuesto_ejecutado'] = (float)($presupuesto['ejecutado'] ?? 0);
 
 // PQRS
 $stats['pqrs_total'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs")->fetchColumn();
 $stats['pqrs_resueltas'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs WHERE estado IN ('resuelto', 'cerrado')")->fetchColumn();
 
-// Postulados por estado (para gráfico)
-$stmt = $pdo->query("SELECT estado_evaluacion, COUNT(*) as total FROM postulados GROUP BY estado_evaluacion");
-$stats['por_estado'] = $stmt->fetchAll();
-
-// Postulados por programa
-$stmt = $pdo->query("
-    SELECT p.nombre AS programa, COUNT(po.id) AS total
-    FROM programas p
-    LEFT JOIN postulados po ON po.programa_id = p.id
-    GROUP BY p.id
-");
-$stats['por_programa'] = $stmt->fetchAll();
+// Contratos (Si aún se usan, los mantenemos en el backend por compatibilidad)
+$stats['contratos'] = (int)$pdo->query("SELECT COUNT(*) FROM contratos WHERE estado='activo'")->fetchColumn();
 
 jsonResponse(true, 'OK', $stats);

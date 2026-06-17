@@ -12,51 +12,6 @@
 
 <div id="app-shell">
 
-  <!-- ============================================================
-       SIDEBAR
-       ============================================================ -->
-  <aside id="sidebar">
-
-    <!-- Header / Logo -->
-    <div class="sidebar-header">
-      <div class="sidebar-logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 110" width="24" height="24">
-          <polyline points="60,4 112,104" fill="none" stroke="#F59E0B" stroke-width="9" stroke-linecap="round"/>
-          <polyline points="60,4 8,104" fill="none" stroke="white" stroke-width="9" stroke-linecap="round"/>
-          <line x1="8" y1="104" x2="112" y2="104" stroke="white" stroke-width="9" stroke-linecap="round"/>
-          <path d="M60,97 C60,82 51,67 45,53 C55,62 60,77 60,97Z" fill="white"/>
-          <path d="M60,97 C60,82 69,67 75,53 C65,62 60,77 60,97Z" fill="white"/>
-          <line x1="60" y1="97" x2="60" y2="55" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="sidebar-logo-text">
-        <div class="sidebar-brand">UT COMEXAGRO</div>
-        <div class="sidebar-sub">Panel Administrativo</div>
-      </div>
-      <div class="sidebar-toggle" id="sidebar-toggle" title="Colapsar menú">‹</div>
-    </div>
-
-    <!-- Usuario actual -->
-    <div class="sidebar-user">
-      <div class="sidebar-avatar" id="sidebar-avatar-initial">A</div>
-      <div class="sidebar-user-info">
-        <div class="sidebar-user-name" id="sidebar-user-name">Cargando...</div>
-        <div class="sidebar-user-rol"  id="sidebar-user-rol">–</div>
-      </div>
-    </div>
-
-    <!-- Navegación dinámica (renderizada por app.js) -->
-    <nav class="sidebar-nav" id="sidebar-nav"></nav>
-
-    <!-- Logout -->
-    <div class="sidebar-footer">
-      <div class="sidebar-logout" id="btn-logout">
-        <span>🚪</span>
-        <span>Cerrar sesión</span>
-      </div>
-    </div>
-
-  </aside><!-- /sidebar -->
 
   <!-- ============================================================
        ÁREA PRINCIPAL
@@ -65,11 +20,27 @@
 
     <!-- Top bar -->
     <header id="topbar">
-      <div class="topbar-left">
-        <!-- Hamburguesa móvil -->
-        <div class="topbar-hamburger" id="topbar-hamburger">
-          <span></span><span></span><span></span>
+      <div class="topbar-left" style="display:flex; align-items:center; gap: 1rem;">
+        <!-- Logo Button to Dashboard -->
+        <div style="display:flex; align-items:center; gap: 0.75rem; cursor:pointer;" onclick="window.location.hash='dashboard'" title="Ir al Inicio">
+          <div style="background: linear-gradient(135deg, var(--green-700), var(--green-600)); width: 40px; height: 40px; display:flex; align-items:center; justify-content:center; border-radius: 10px; box-shadow: 0 4px 12px rgba(22,163,74,.35); flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 110" width="24" height="24">
+              <polyline points="60,4 112,104" fill="none" stroke="#F59E0B" stroke-width="9" stroke-linecap="round"/>
+              <polyline points="60,4 8,104" fill="none" stroke="white" stroke-width="9" stroke-linecap="round"/>
+              <line x1="8" y1="104" x2="112" y2="104" stroke="white" stroke-width="9" stroke-linecap="round"/>
+              <path d="M60,97 C60,82 51,67 45,53 C55,62 60,77 60,97Z" fill="white"/>
+              <path d="M60,97 C60,82 69,67 75,53 C65,62 60,77 60,97Z" fill="white"/>
+              <line x1="60" y1="97" x2="60" y2="55" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight:700; color:var(--gray-800); font-size:1rem; letter-spacing:-0.02em;">UT COMEXAGRO</div>
+            <div style="font-size:0.75rem; color:var(--gray-500);">Panel Administrativo</div>
+          </div>
         </div>
+
+        <div style="width:1px; height:30px; background:var(--gray-200); margin:0 0.5rem;"></div>
+
         <!-- Breadcrumb -->
         <nav class="breadcrumb" aria-label="Navegación">
           <span>🏠</span>
@@ -89,13 +60,19 @@
         </div>
 
         <!-- Avatar / usuario -->
-        <div class="topbar-avatar-btn" title="Mi cuenta">
+        <div class="topbar-avatar-btn" title="Mi cuenta" style="display:flex; align-items:center; gap:0.5rem;">
           <div class="topbar-avatar" id="topbar-avatar-initial">A</div>
           <div>
             <div class="topbar-uname" id="topbar-user-name">...</div>
             <div class="topbar-rol"   id="topbar-user-rol">...</div>
           </div>
         </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-secondary btn-sm" id="btn-logout" title="Cerrar sesión" style="display:flex; align-items:center; gap:0.25rem;">
+          <span>🚪</span>
+          <span>Salir</span>
+        </button>
       </div>
     </header><!-- /topbar -->
 
