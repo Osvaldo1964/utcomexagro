@@ -15,6 +15,7 @@ requireMethod('POST');
 $nit               = trim($_POST['nit'] ?? '');
 $nombre            = trim($_POST['nombre'] ?? '');
 $tipo_id           = filter_var($_POST['tipo_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
+$poblacion_tipo_id = filter_var($_POST['poblacion_tipo_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
 $rep_legal         = trim($_POST['rep_legal'] ?? '');
 $direccion         = trim($_POST['direccion'] ?? '');
 $telefono          = trim($_POST['telefono'] ?? '');
@@ -36,10 +37,10 @@ if ($check->fetch()) {
 }
 
 $stmt = $pdo->prepare("
-    INSERT INTO organizaciones (nit, nombre, tipo_id, rep_legal, direccion, telefono, email, departamento, municipio, max_beneficiarios, estado)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO organizaciones (nit, nombre, tipo_id, poblacion_tipo_id, rep_legal, direccion, telefono, email, departamento, municipio, max_beneficiarios, estado)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
-$stmt->execute([$nit, $nombre, $tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios, $estado]);
+$stmt->execute([$nit, $nombre, $tipo_id, $poblacion_tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios, $estado]);
 $newId = $pdo->lastInsertId();
 
 jsonResponse(true, 'Organización creada con éxito.', ['id' => $newId]);

@@ -19,6 +19,15 @@ function renderBeneficiariosMenu() {
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
 
+        <div class="module-card" onclick="loadTiposPoblacion()">
+          <div class="module-card-header">
+            <div class="module-icon icon-training" style="background:#B45309">🌍</div>
+            <div><div class="module-name">Enfoques Poblacionales</div><span class="badge badge-active">Activo</span></div>
+          </div>
+          <div class="module-desc">Gestionar tipos de población (Afro, Indígena, Raizal, etc.) para organizaciones.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
+        </div>
+
         <div class="module-card" onclick="renderOrganizaciones()">
           <div class="module-card-header">
             <div class="module-icon icon-config">🏢</div>
@@ -624,3 +633,122 @@ async function ejecutarEliminarTipo(id) {
     showToastAdmin('Error al eliminar el tipo de organización.', 'error');
   }
 }
+
+// ================================================================
+// TIPOS DE POBLACIÓN (ENFOQUES)
+// ================================================================
+
+async function loadTiposPoblacion() {
+  updateBreadcrumb([
+    { label: '🏠', key: 'dashboard' },
+    { label: 'Beneficiarios', key: 'beneficiarios' },
+    { label: 'Enfoques Poblacionales' }
+  ]);
+
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="module-page">
+      <div class="module-page-header">
+        <div class="module-page-title">🌍 Enfoques Poblacionales</div>
+        <div class="module-page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="renderBeneficiariosMenu()">↩️ Volver</button>
+        </div>
+      </div>
+      <div class="table-card" style="max-width:800px; margin:0 auto;">
+        <div class="table-toolbar">
+          <h3 style="margin:0; font-size:1.1rem; color:var(--gray-700);">Registrar Nuevo Enfoque</h3>
+        </div>
+        <div style="padding:1.5rem; display:flex; gap:1rem; align-items:flex-end; border-bottom:1px solid var(--gray-200);">
+          <div class="form-group" style="margin:0; flex:1">
+            <label class="form-label">Nombre del Enfoque (Ej: Afrodescendiente, Indígena)</label>
+            <input type="text" id="nuevo-poblacion-nombre" class="form-control" placeholder="Nombre...">
+          </div>
+          <button class="btn btn-primary" onclick="guardarTipoPoblacion()">💾 Guardar Enfoque</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre del Enfoque</th>
+              <th>Organizaciones Asociadas</th>
+              <th style="text-align:right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="poblacion-tbody">
+            <tr><td colspan="3" style="text-align:center"><div class="spinner-inline"></div> Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  try {
+    const res = await API.get('/beneficiarios/poblacion_tipos.php');
+    const tbody = document.getElementById('poblacion-tbody');
+    if (res.success) {
+      if (res.data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray-500)">No hay enfoques registrados.</td></tr>';
+      } else {
+        tbody.innerHTML = res.data.map(t => `
+          <tr>
+            <td style="font-weight:bold">${t.nombre}</td>
+            <td>${t.total_organizaciones} organizaciones</td>
+            <td style="text-align:right">
+              <button class="btn-icon" onclick="eliminarTipoPoblacion(${t.id})" title="Eliminar" style="color:var(--red-600)">🗑️</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    } else {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:red;text-align:center">Error al cargar datos.</td></tr>';
+    }
+  } catch(e) {
+    showToastAdmin('Error de conexión', 'error');
+  }
+}
+
+window.guardarTipoPoblacion = async function() {
+  const input = document.getElementById('nuevo-poblacion-nombre');
+  const nombre = input.value.trim();
+  if (!nombre) {
+    showToastAdmin('El nombre es obligatorio.', 'error');
+    return;
+  }
+  try {
+    const res = await API.post('/beneficiarios/poblacion_tipos.php', { nombre });
+    if (res.success) {
+      showToastAdmin(res.message, 'success');
+      loadTiposPoblacion();
+    } else {
+      showToastAdmin(res.message, 'error');
+    }
+  } catch(e) {
+    showToastAdmin('Error de red', 'error');
+  }
+};
+
+window.eliminarTipoPoblacion = async function(id) {
+  Swal.fire({
+    title: '¿Eliminar enfoque?',
+    text: "Esta acción no se puede deshacer.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const res = await API.post('/beneficiarios/poblacion_tipos.php', { action: 'delete', id });
+        if (res.success) {
+          showToastAdmin(res.message, 'success');
+          loadTiposPoblacion();
+        } else {
+          showToastAdmin(res.message, 'error');
+        }
+      } catch(e) {
+        showToastAdmin('Error al eliminar', 'error');
+      }
+    }
+  });
+};

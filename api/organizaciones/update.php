@@ -18,6 +18,7 @@ if (!$id) jsonResponse(false, 'ID de organización inválido.', [], 422);
 $nit               = trim($_POST['nit'] ?? '');
 $nombre            = trim($_POST['nombre'] ?? '');
 $tipo_id           = filter_var($_POST['tipo_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
+$poblacion_tipo_id = filter_var($_POST['poblacion_tipo_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
 $rep_legal         = trim($_POST['rep_legal'] ?? '');
 $direccion         = trim($_POST['direccion'] ?? '');
 $telefono          = trim($_POST['telefono'] ?? '');
@@ -40,9 +41,9 @@ if ($check->fetch()) {
 
 $stmt = $pdo->prepare("
     UPDATE organizaciones 
-    SET nit=?, nombre=?, tipo_id=?, rep_legal=?, direccion=?, telefono=?, email=?, departamento=?, municipio=?, max_beneficiarios=?, estado=?
+    SET nit=?, nombre=?, tipo_id=?, poblacion_tipo_id=?, rep_legal=?, direccion=?, telefono=?, email=?, departamento=?, municipio=?, max_beneficiarios=?, estado=?
     WHERE id=?
 ");
-$stmt->execute([$nit, $nombre, $tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios, $estado, $id]);
+$stmt->execute([$nit, $nombre, $tipo_id, $poblacion_tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios, $estado, $id]);
 
 jsonResponse(true, 'Organización actualizada con éxito.');

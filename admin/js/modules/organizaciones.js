@@ -35,6 +35,7 @@ async function renderOrganizaciones() {
                 <th>ID</th>
                 <th>NIT</th>
                 <th>Nombre</th>
+                <th>Tipo / Enfoque</th>
                 <th>Representante</th>
                 <th>Email / Tel</th>
                 <th>Ubicación</th>
@@ -86,6 +87,10 @@ function renderOrganizacionesTable(data) {
       <td style="color:var(--gray-400);font-size:.75rem">${o.id}</td>
       <td><strong>${o.nit}</strong></td>
       <td>${o.nombre}</td>
+      <td style="font-size:.85rem">
+        <div>${o.tipo_nombre || 'N/A'}</div>
+        ${o.poblacion_nombre ? `<span class="badge badge-aplica" style="font-size:.7rem;margin-top:.25rem">${o.poblacion_nombre}</span>` : ''}
+      </td>
       <td style="font-size:.85rem">${o.rep_legal || '–'}</td>
       <td style="font-size:.85rem">${o.email || '–'}<br><span style="color:var(--gray-400)">${o.telefono || '–'}</span></td>
       <td style="font-size:.85rem">${o.municipio || '–'}, ${o.departamento || '–'}</td>
@@ -111,10 +116,19 @@ function filterOrganizaciones(searchVal) {
   renderOrganizacionesTable(filtered);
 }
 
-function abrirModalOrganizacion(org = null) {
+async function abrirModalOrganizacion(org = null) {
   const isEdit = !!org;
   const title = isEdit ? 'Editar Organización' : 'Nueva Organización';
   
+  // Mostrar loading state
+  showModal(title, '<div style="text-align:center;padding:2rem"><div class="spinner-inline"></div> Cargando formulario...</div>', '', true);
+
+  let tiposPoblacion = [];
+  try {
+    const resP = await API.get('/beneficiarios/poblacion_tipos.php');
+    if (resP.success) tiposPoblacion = resP.data;
+  } catch(e) {}
+
   const formHtml = `
     <form id="form-org" onsubmit="guardarOrganizacion(event, ${org ? org.id : 'null'})">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
@@ -126,10 +140,19 @@ function abrirModalOrganizacion(org = null) {
           <label class="form-label">Nombre de la Organización *</label>
           <input type="text" id="org-nombre" class="form-control" value="${org?.nombre || ''}" required>
         </div>
-        <div class="form-group" style="grid-column:1/-1">
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de Población (Enfoque)</label>
+          <select id="org-poblacion" class="form-control">
+            <option value="">-- No aplica / Ninguno --</option>
+            ${tiposPoblacion.map(t => `<option value="${t.id}" ${org?.poblacion_tipo_id == t.id ? 'selected' : ''}>${t.nombre}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
           <label class="form-label">Representante Legal</label>
           <input type="text" id="org-rep" class="form-control" value="${org?.rep_legal || ''}">
         </div>
+
         <div class="form-group">
           <label class="form-label">Email</label>
           <input type="email" id="org-email" class="form-control" value="${org?.email || ''}">
@@ -199,6 +222,12 @@ async function guardarOrganizacion(e, id) {
   if (id) fd.append('id', id);
   fd.append('nit', document.getElementById('org-nit').value);
   fd.append('nombre', document.getElementById('org-nombre').value);
+  
+  const poblacionEl = document.getElementById('org-poblacion');
+  if (poblacionEl && poblacionEl.value) {
+    fd.append('poblacion_tipo_id', poblacionEl.value);
+  }
+  
   fd.append('rep_legal', document.getElementById('org-rep').value);
   fd.append('email', document.getElementById('org-email').value);
   fd.append('telefono', document.getElementById('org-telefono').value);

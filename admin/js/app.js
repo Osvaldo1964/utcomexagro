@@ -58,8 +58,52 @@ const MODULES = [
     desc: 'Control presupuestal y ejecución por rubros',
     section: 'admin',
     permiso: 'presupuesto.leer',
-    badgeText: 'En desarrollo',
-    badgeClass: 'badge-dev',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-budget',
+  },
+  {
+    key: 'terceros',
+    label: 'Terceros',
+    icon: '🪪',
+    desc: 'Gestión de Proveedores y Clientes',
+    section: 'hidden', // No show in sidebar
+    permiso: 'presupuesto.leer', // Hereda permisos de presupuesto
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-people',
+  },
+  {
+    key: 'presupuesto_rubros',
+    label: 'Planeación Presupuestal',
+    icon: '🧮',
+    desc: 'Rubros y Árbol Presupuestal',
+    section: 'hidden',
+    permiso: 'presupuesto.leer',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-budget',
+  },
+  {
+    key: 'presupuesto_movimientos',
+    label: 'Ejecución Presupuestal',
+    icon: '💸',
+    desc: 'Registro de movimientos',
+    section: 'hidden',
+    permiso: 'presupuesto.leer',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-budget',
+  },
+  {
+    key: 'presupuesto_traslados',
+    label: 'Traslados',
+    icon: '🔁',
+    desc: 'Traslados presupuestales',
+    section: 'hidden',
+    permiso: 'presupuesto.leer',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
     iconClass: 'icon-budget',
   },
   {
@@ -73,6 +117,7 @@ const MODULES = [
     badgeClass: 'badge-dev',
     iconClass: 'icon-inventory',
   },
+
   {
     key: 'capacitaciones',
     label: 'Capacitaciones',
@@ -106,6 +151,17 @@ const MODULES = [
     badgeClass: 'badge-active',
     iconClass: 'icon-message',
   },
+  {
+    key: 'informes',
+    label: 'Informes',
+    icon: '📊',
+    desc: 'Central de reportes y exportaciones',
+    section: 'admin',
+    permiso: 'informes.leer',
+    badgeText: 'Nuevo',
+    badgeClass: 'badge-active',
+    iconClass: 'icon-training',
+  }
 ];
 
 // ---- Estado de la app ----
@@ -211,6 +267,12 @@ function navigateTo(moduleKey) {
       case 'organizaciones':renderOrganizaciones(); break;
       case 'encuestas':     renderEncuestas(); break;
       case 'pqrs':          renderPqrs(); break;
+      case 'presupuesto':   renderPresupuesto(); break;
+      case 'terceros':      renderTerceros(); break;
+      case 'presupuesto_rubros': renderPresupuestoRubros(); break;
+      case 'presupuesto_movimientos': renderPresupuestoMovimientos(); break;
+      case 'presupuesto_traslados': renderPresupuestoTraslados(); break;
+      case 'informes':      renderInformes(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);
@@ -227,7 +289,7 @@ function renderDashboard() {
   const content = document.getElementById('content');
 
   // Módulos accesibles para las cards
-  const accessibleMods = MODULES.filter(m => m.key !== 'dashboard' && canSeeModule(m, Auth.getUser()));
+  const accessibleMods = MODULES.filter(m => m.key !== 'dashboard' && m.section !== 'hidden' && canSeeModule(m, Auth.getUser()));
 
   content.innerHTML = `
     <div class="module-page">
@@ -349,7 +411,21 @@ function closeMobileSidebar() {
 // ================================================================
 function initTopbar(user) {
   document.getElementById('btn-logout')?.addEventListener('click', () => {
-    if (confirm('¿Deseas cerrar sesión?')) Auth.logout();
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: "Saldrás del panel de administración de UT Comexagro.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#166534',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Auth.logout();
+      }
+    });
   });
 }
 

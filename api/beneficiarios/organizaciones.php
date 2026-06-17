@@ -17,11 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Listar
     // También calculamos cuántos beneficiarios activos tiene asociados actualmente e incluimos el tipo de organización
     $stmt = $pdo->query("
-        SELECT o.*, t.nombre AS tipo_nombre, COUNT(b.id) AS total_beneficiarios_actual
+        SELECT o.*, t.nombre AS tipo_nombre, pt.nombre AS poblacion_nombre, COUNT(b.id) AS total_beneficiarios_actual
         FROM organizaciones o
         LEFT JOIN tipos_organizacion t ON o.tipo_id = t.id
+        LEFT JOIN poblacion_tipos pt ON o.poblacion_tipo_id = pt.id
         LEFT JOIN beneficiarios b ON o.id = b.organizacion_id AND b.estado = 'activo'
-        GROUP BY o.id, t.id
+        GROUP BY o.id, t.id, pt.id
         ORDER BY o.nombre ASC
     ");
     $orgs = $stmt->fetchAll();
@@ -33,6 +34,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nit               = trim($_POST['nit'] ?? '');
     $nombre            = trim($_POST['nombre'] ?? '');
     $tipo_id           = filter_var($_POST['tipo_id'] ?? null, FILTER_VALIDATE_INT);
+    $poblacion_tipo_id = filter_var($_POST['poblacion_tipo_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
     $rep_legal         = trim($_POST['rep_legal'] ?? '');
     $direccion         = trim($_POST['direccion'] ?? '');
     $telefono          = trim($_POST['telefono'] ?? '');
@@ -60,10 +62,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO organizaciones (nit, nombre, tipo_id, rep_legal, direccion, telefono, email, departamento, municipio, max_beneficiarios)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO organizaciones (nit, nombre, tipo_id, poblacion_tipo_id, rep_legal, direccion, telefono, email, departamento, municipio, max_beneficiarios)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->execute([$nit, $nombre, $tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios]);
+    $stmt->execute([$nit, $nombre, $tipo_id, $poblacion_tipo_id, $rep_legal, $direccion, $telefono, $email, $departamento, $municipio, $max_beneficiarios]);
     $newId = $pdo->lastInsertId();
 
     // Log

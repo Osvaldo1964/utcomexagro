@@ -13,9 +13,11 @@ $pdo = Database::getConnection();
 requireMethod('GET');
 
 $stmt = $pdo->query("
-    SELECT *
-    FROM organizaciones
-    ORDER BY nombre ASC
+    SELECT o.*, pt.nombre AS poblacion_nombre, t.nombre AS tipo_nombre
+    FROM organizaciones o
+    LEFT JOIN poblacion_tipos pt ON o.poblacion_tipo_id = pt.id
+    LEFT JOIN tipos_organizacion t ON o.tipo_id = t.id
+    ORDER BY o.nombre ASC
 ");
 $orgs = $stmt->fetchAll();
 
