@@ -278,6 +278,18 @@ function renderDashboard() {
             <div class="stat-label">Ejecución Presupuestal</div>
           </div>
         </div>
+        <div class="stat-card" style="border-left: 4px solid #8B5CF6">
+          <div class="stat-icon" style="background: #EDE9FE; color: #8B5CF6">🎓</div>
+          <div><div class="stat-value" id="stat-capacitaciones">...</div><div class="stat-label">Capacitaciones</div></div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid #EC4899">
+          <div class="stat-icon" style="background: #FCE7F3; color: #EC4899">📋</div>
+          <div><div class="stat-value" id="stat-encuestas">...</div><div class="stat-label">Encuestas</div></div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid #F97316">
+          <div class="stat-icon" style="background: #FFEDD5; color: #F97316">📦</div>
+          <div><div class="stat-value" id="stat-inventarios">...</div><div class="stat-label">Ítems Inventario</div></div>
+        </div>
       </div>
 
       <!-- Módulos -->
@@ -314,6 +326,9 @@ async function loadDashboardStats() {
       if (document.getElementById('stat-orgs'))     document.getElementById('stat-orgs').textContent     = d.organizaciones ?? 0;
       if (document.getElementById('stat-terceros')) document.getElementById('stat-terceros').textContent = d.terceros ?? 0;
       if (document.getElementById('stat-pqrs'))     document.getElementById('stat-pqrs').textContent     = `${d.pqrs_total ?? 0} / ${d.pqrs_resueltas ?? 0}`;
+      if (document.getElementById('stat-capacitaciones')) document.getElementById('stat-capacitaciones').textContent = d.capacitaciones ?? 0;
+      if (document.getElementById('stat-encuestas')) document.getElementById('stat-encuestas').textContent = d.encuestas ?? 0;
+      if (document.getElementById('stat-inventarios')) document.getElementById('stat-inventarios').textContent = d.inventario_items ?? 0;
       
       if (document.getElementById('stat-presupuesto')) {
         const total = d.presupuesto_total ?? 0;

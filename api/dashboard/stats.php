@@ -32,4 +32,13 @@ $stats['pqrs_resueltas'] = (int)$pdo->query("SELECT COUNT(*) FROM pqrs WHERE est
 // Contratos (Si aún se usan, los mantenemos en el backend por compatibilidad)
 $stats['contratos'] = (int)$pdo->query("SELECT COUNT(*) FROM contratos WHERE estado='activo'")->fetchColumn();
 
+// Capacitaciones
+$stats['capacitaciones'] = (int)$pdo->query("SELECT COUNT(*) FROM capacitaciones")->fetchColumn();
+
+// Encuestas
+$stats['encuestas'] = (int)$pdo->query("SELECT COUNT(*) FROM encuestas")->fetchColumn();
+
+// Inventarios
+$stats['inventario_items'] = (int)$pdo->query("SELECT COUNT(*) FROM inventario_items")->fetchColumn();
+
 jsonResponse(true, 'OK', $stats);
