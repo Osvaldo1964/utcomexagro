@@ -113,8 +113,8 @@ const MODULES = [
     desc: 'Gestión de activos, dotaciones e insumos',
     section: 'admin',
     permiso: 'inventarios.leer',
-    badgeText: 'En desarrollo',
-    badgeClass: 'badge-dev',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
     iconClass: 'icon-inventory',
   },
 
@@ -136,8 +136,8 @@ const MODULES = [
     desc: 'Creación y análisis de encuestas',
     section: 'admin',
     permiso: 'encuestas.leer',
-    badgeText: 'En desarrollo',
-    badgeClass: 'badge-dev',
+    badgeText: 'Activo',
+    badgeClass: 'badge-active',
     iconClass: 'icon-survey',
   },
   {
@@ -227,6 +227,7 @@ function navigateTo(moduleKey) {
       case 'presupuesto_movimientos': renderPresupuestoMovimientos(); break;
       case 'presupuesto_traslados': renderPresupuestoTraslados(); break;
       case 'informes':      renderInformes(); break;
+      case 'inventarios':   ModInventarios.init(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);

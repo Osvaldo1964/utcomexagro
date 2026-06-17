@@ -114,7 +114,11 @@ function filterTerceros() {
 function abrirModalTercero(id = null) {
   let t = null;
   if (id) {
-    t = window.allTerceros.find(x => x.id === id);
+    let sourceArray = window.allTerceros;
+    if (!sourceArray && typeof currentModule !== 'undefined' && currentModule === 'inventarios' && typeof ModInventarios !== 'undefined') {
+      sourceArray = ModInventarios.data.terceros;
+    }
+    t = sourceArray ? sourceArray.find(x => x.id == id) : null;
     if (!t) return;
   }
 
@@ -211,7 +215,12 @@ async function guardarTercero(event, id) {
     if (res.success) {
       showToastAdmin(res.message, 'success');
       closeModal();
-      renderTerceros(); // recargar
+      if (typeof currentModule !== 'undefined' && currentModule === 'inventarios' && typeof ModInventarios !== 'undefined') {
+        await ModInventarios.loadData();
+        ModInventarios.showTab('terceros');
+      } else {
+        renderTerceros(); // recargar
+      }
     } else {
       showToastAdmin(res.message, 'error');
     }

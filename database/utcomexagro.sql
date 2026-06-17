@@ -1,6 +1,6 @@
 -- ============================================================
 -- UT COMEXAGRO – Script de Base de Datos
--- Versión: 1.0 | Fecha: 2024
+-- Versión: 1.0 | Fecha: 2026
 -- Ejecutar en phpMyAdmin o CLI: mysql -u root -p < utcomexagro.sql
 -- ============================================================
 

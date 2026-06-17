@@ -1,7 +1,7 @@
 -- ============================================================
 -- MIGRACIÓN: Módulo CAPACITACIONES
 -- Archivo: database/migrations/001_add_capacitaciones.sql
--- Fecha: 2024
+-- Fecha: 2026
 -- ============================================================
 
 USE utcomexagro;
