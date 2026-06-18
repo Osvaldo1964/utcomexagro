@@ -82,13 +82,12 @@ window.abrirModalReporteMovimientos = async function() {
           </div>
         </div>
 
-        <button type="submit" id="btn-submit-rep-mov-hidden" style="display:none"></button>
       </form>
     `;
 
     showModal('Reporte de Movimientos Presupuestales', html, `
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="document.getElementById('btn-submit-rep-mov-hidden').click()">Generar Reporte</button>
+      <button class="btn btn-primary" onclick="generarInformeMovimientos()">Generar Reporte</button>
     `, true);
 
   } catch (err) {
@@ -96,8 +95,9 @@ window.abrirModalReporteMovimientos = async function() {
   }
 };
 
-window.generarInformeMovimientos = async function(event) {
-  event.preventDefault();
+window.generarInformeMovimientos = async function() {
+  const form = document.getElementById('form-informe-movimientos');
+  if (form && !form.reportValidity()) return;
 
   const data = {
     desde: document.getElementById('rep-mov-desde').value,
@@ -238,15 +238,11 @@ function exportarMovimientosPDF(data, desde, hasta) {
             </tr>
           </tbody>
         </table>
-        <script>
-          window.onload = function() { window.print(); }
-        </script>
+        <script></script>
       </body>
     </html>
   `;
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
+  printHTML(html);
 }
 
 
@@ -285,18 +281,18 @@ window.abrirModalReporteTraslados = async function() {
         </div>
       </div>
 
-      <button type="submit" id="btn-submit-rep-tra-hidden" style="display:none"></button>
-    </form>
+      </form>
   `;
 
   showModal('Reporte de Traslados Realizados', html, `
     <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-    <button class="btn btn-primary" onclick="document.getElementById('btn-submit-rep-tra-hidden').click()">Generar Reporte</button>
+    <button class="btn btn-primary" onclick="generarInformeTraslados()">Generar Reporte</button>
   `, true);
 };
 
-window.generarInformeTraslados = async function(event) {
-  event.preventDefault();
+window.generarInformeTraslados = async function() {
+  const form = document.getElementById('form-informe-traslados');
+  if (form && !form.reportValidity()) return;
 
   const data = {
     desde: document.getElementById('rep-tra-desde').value,
@@ -408,13 +404,9 @@ function exportarTrasladosPDF(data, desde, hasta) {
             ${trs}
           </tbody>
         </table>
-        <script>
-          window.onload = function() { window.print(); }
-        </script>
+        <script></script>
       </body>
     </html>
   `;
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
+  printHTML(html);
 }

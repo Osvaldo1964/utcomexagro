@@ -92,6 +92,224 @@ function renderInformes() {
             </div>
           </div>
         `;
+      } else if (mod.key === 'inventarios') {
+        innerContent = `
+          <div class="modules-grid" style="margin-top: 1rem;">
+            
+            <div class="module-card" onclick="abrirModalReporteInvMovimientos('')">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#e0f2fe;color:#0284c7">🔄</div>
+                <div>
+                  <div class="module-name">Listado de Movimientos</div>
+                  <span class="badge" style="background:#e0f2fe;color:#0284c7">General</span>
+                </div>
+              </div>
+              <div class="module-desc">Todos los movimientos del inventario con filtros de fechas, ítems y tipo de operación.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvOrdenes()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#f3e8ff;color:#9333ea">🛒</div>
+                <div>
+                  <div class="module-name">Listado de Órdenes</div>
+                  <span class="badge" style="background:#f3e8ff;color:#9333ea">Compras</span>
+                </div>
+              </div>
+              <div class="module-desc">Órdenes de compra generadas, con filtros de fechas y proveedores.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvMovimientos('entrada')">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#dcfce7;color:#16a34a">📥</div>
+                <div>
+                  <div class="module-name">Entradas al Almacén</div>
+                  <span class="badge" style="background:#dcfce7;color:#16a34a">Ingresos</span>
+                </div>
+              </div>
+              <div class="module-desc">Historial exclusivo de compras, remisiones y ajustes de ingreso al almacén.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvMovimientos('salida')">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#fee2e2;color:#dc2626">📤</div>
+                <div>
+                  <div class="module-name">Salidas y Consumos</div>
+                  <span class="badge" style="background:#fee2e2;color:#dc2626">Egresos</span>
+                </div>
+              </div>
+              <div class="module-desc">Historial exclusivo de mercancía entregada a empleados, proyectos o salidas por baja.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvMovimientos('ajuste')">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#fef9c3;color:#ca8a04">⚖️</div>
+                <div>
+                  <div class="module-name">Ajustes de Inventario</div>
+                  <span class="badge" style="background:#fef9c3;color:#ca8a04">Auditoría</span>
+                </div>
+              </div>
+              <div class="module-desc">Historial de correcciones manuales hechas al stock del sistema.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvConsolidado(false)">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#ffedd5;color:#ea580c">📦</div>
+                <div>
+                  <div class="module-name">Inventario Consolidado</div>
+                  <span class="badge" style="background:#ffedd5;color:#ea580c">Valorizado</span>
+                </div>
+              </div>
+              <div class="module-desc">Saldos actuales de todos los ítems valorizados a su Costo Promedio Ponderado.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteInvConsolidado(true)">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#f1f5f9;color:#475569">📝</div>
+                <div>
+                  <div class="module-name">Informe para Toma Física</div>
+                  <span class="badge" style="background:#f1f5f9;color:#475569">Conteo</span>
+                </div>
+              </div>
+              <div class="module-desc">Plantilla del catálogo sin cantidades ni costos, lista para conteo manual en bodega.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+          </div>
+        `;
+      } else if (mod.key === 'beneficiarios') {
+        innerContent = `
+          <div class="modules-grid" style="margin-top: 1rem;">
+            
+            <div class="module-card" onclick="abrirModalReporteBenTiposPoblacion()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#e0e7ff;color:#4f46e5">👥</div>
+                <div>
+                  <div class="module-name">Tipos de Población</div>
+                  <span class="badge" style="background:#e0e7ff;color:#4f46e5">Clasificación</span>
+                </div>
+              </div>
+              <div class="module-desc">Catálogo de los tipos de población (ej. Campesina, Indígena) y conteo de organizaciones asociadas.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteBenEnfoque()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#fae8ff;color:#c026d3">🎯</div>
+                <div>
+                  <div class="module-name">Enfoque Poblacional</div>
+                  <span class="badge" style="background:#fae8ff;color:#c026d3">Tipos Org.</span>
+                </div>
+              </div>
+              <div class="module-desc">Tipos de organizaciones productivas (Acuícola, Agrícola, etc.) y cuántas agrupaciones existen en cada rama.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteBenOrganizaciones()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#dcfce7;color:#16a34a">🏢</div>
+                <div>
+                  <div class="module-name">Directorio Organizaciones</div>
+                  <span class="badge" style="background:#dcfce7;color:#16a34a">Asociaciones</span>
+                </div>
+              </div>
+              <div class="module-desc">Listado detallado de todas las organizaciones, sus representantes legales y datos de contacto.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteBenBeneficiarios()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#ffedd5;color:#ea580c">🧑‍🌾</div>
+                <div>
+                  <div class="module-name">Padrón de Beneficiarios</div>
+                  <span class="badge" style="background:#ffedd5;color:#ea580c">Personas</span>
+                </div>
+              </div>
+              <div class="module-desc">Listado completo de todas las personas registradas, con la opción de filtrar por organización específica.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+          </div>
+        `;
+      } else if (mod.key === 'encuestas') {
+        innerContent = `
+          <div class="modules-grid" style="margin-top: 1rem;">
+            
+            <div class="module-card" onclick="renderInformeGraficaEncuesta()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#dbeafe;color:#2563eb">📊</div>
+                <div>
+                  <div class="module-name">Graficar Datos</div>
+                  <span class="badge" style="background:#dbeafe;color:#2563eb">Interactivo</span>
+                </div>
+              </div>
+              <div class="module-desc">Genera gráficas dinámicas de cualquier pregunta para analizar tendencias.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Abrir Dashboard <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalListadoEncuestas()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#e0e7ff;color:#4f46e5">📋</div>
+                <div>
+                  <div class="module-name">Listado de Respuestas</div>
+                  <span class="badge" style="background:#e0e7ff;color:#4f46e5">Exportación</span>
+                </div>
+              </div>
+              <div class="module-desc">Tabula todas las respuestas de una encuesta en una matriz de datos para Excel o PDF.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+          </div>
+        `;
+      } else if (mod.key === 'pqrs') {
+        innerContent = `
+          <div class="modules-grid" style="margin-top: 1rem;">
+            <div class="module-card" onclick="abrirModalReportePQRS()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#fef3c7;color:#d97706">🗣️</div>
+                <div>
+                  <div class="module-name">Listado de PQRS</div>
+                  <span class="badge" style="background:#fef3c7;color:#d97706">Atención</span>
+                </div>
+              </div>
+              <div class="module-desc">Genera un reporte con las peticiones, quejas y reclamos registrados. Filtra por rango de fechas y estado actual de atención.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+          </div>
+        `;
       } else {
         innerContent = `
           <div style="text-align: center; padding: 4rem 2rem; background: var(--gray-50); border-radius: 8px; border: 1px dashed var(--gray-300);">
@@ -362,11 +580,5 @@ function exportToPDF(flatData) {
     </html>
   `;
 
-  const printWin = window.open('', '_blank');
-  printWin.document.write(html);
-  printWin.document.close();
-  printWin.focus();
-  setTimeout(() => {
-    printWin.print();
-  }, 500);
+  printHTML(html);
 }

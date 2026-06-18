@@ -17,20 +17,22 @@ try {
     $orden_id = $pdo->lastInsertId();
     
     if (isset($data["items"]) && is_array($data["items"])) {
-        $stmtItem = $pdo->prepare("INSERT INTO inv_ordenes_compra_items (orden_id, item_id, cantidad, valor_unitario, valor_total) VALUES (?, ?, ?, ?, ?)");
+        $stmtItem = $pdo->prepare("INSERT INTO inv_ordenes_compra_items (orden_id, item_id, cantidad, valor_unitario, valor_total, iva_porcentaje, iva_valor) VALUES (?, ?, ?, ?, ?, ?, ?)");
         foreach ($data["items"] as $item) {
             $stmtItem->execute([
                 $orden_id,
                 $item["item_id"],
                 $item["cantidad"],
                 $item["valor_unitario"],
-                $item["valor_total"]
+                $item["valor_total"],
+                $item["iva_porcentaje"] ?? 0,
+                $item["iva_valor"] ?? 0
             ]);
         }
     }
     
     $pdo->commit();
-    echo json_encode(["success" => true]);
+    echo json_encode(["success" => true, "id" => $orden_id]);
 } catch (Exception $e) {
     $pdo->rollBack();
     echo json_encode(["success" => false, "message" => $e->getMessage()]);

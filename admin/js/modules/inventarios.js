@@ -273,7 +273,7 @@ const ModInventarios = {
       <div class="table-responsive">
         <table class="data-table">
           <thead>
-            <tr><th>Código</th><th>Ítem</th><th>Categoría</th><th>Ubicación</th><th>Stock Actual</th><th>Min.</th><th>Acciones</th></tr>
+            <tr><th>Código</th><th>Ítem</th><th>Categoría</th><th>Ubicación</th><th>Costo Prom.</th><th>Stock Actual</th><th>Min.</th><th>Acciones</th></tr>
           </thead>
           <tbody>
             ${this.data.items.map(i => {
@@ -287,6 +287,7 @@ const ModInventarios = {
                 </td>
                 <td>${i.categoria_nombre || '-'}</td>
                 <td>${i.ubicacion || '-'}</td>
+                <td>${new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.costo_promedio || 0)}</td>
                 <td style="${stockStatus}">${i.cantidad}</td>
                 <td>${i.cantidad_minima}</td>
                 <td style="width:100px;">
@@ -369,6 +370,16 @@ const ModInventarios = {
               <input type="number" id="item_cantidad_minima" class="form-control" value="${item?.cantidad_minima || '0'}">
             </div>
 
+            <div class="form-group" style="grid-column: 1 / -1; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+              <label>Impuesto (IVA) por Defecto</label>
+              <select id="item_iva_porcentaje" class="form-control">
+                <option value="0.00" ${item?.iva_porcentaje == '0.00' ? 'selected' : ''}>0% - Exento o Excluido</option>
+                <option value="5.00" ${item?.iva_porcentaje == '5.00' ? 'selected' : ''}>5% - Bienes y Servicios</option>
+                <option value="19.00" ${item?.iva_porcentaje == '19.00' ? 'selected' : ''}>19% - Tarifa General</option>
+              </select>
+              <small style="color:var(--gray-500); display:block; margin-top:0.25rem;">Este IVA se aplicará automáticamente al añadir el ítem a una orden o movimiento, pero podrás modificarlo.</small>
+            </div>
+
             <div class="form-group" style="grid-column: 1 / -1;">
               <label>Descripción / Detalles</label>
               <textarea id="item_descripcion" class="form-control" rows="2">${item?.descripcion || ''}</textarea>
@@ -394,7 +405,8 @@ const ModInventarios = {
       unidad: document.getElementById('item_unidad').value,
       ubicacion: document.getElementById('item_ubicacion').value,
       cantidad_minima: document.getElementById('item_cantidad_minima').value,
-      descripcion: document.getElementById('item_descripcion').value
+      descripcion: document.getElementById('item_descripcion').value,
+      iva_porcentaje: document.getElementById('item_iva_porcentaje') ? parseFloat(document.getElementById('item_iva_porcentaje').value) : 0
     };
     
     if (!id) data.cantidad = document.getElementById('item_cantidad').value; // Solo se envía en creación
@@ -462,21 +474,21 @@ const ModInventarios = {
       <div class="table-responsive">
         <table class="data-table">
           <thead>
-            <tr><th>Número</th><th>Fecha</th><th>Proveedor</th><th>Estado</th><th>Total</th><th>Acciones</th></tr>
+            <tr><th>Fecha</th><th>No. Orden</th><th>Proveedor</th><th>Estado</th><th>Total</th><th>Acciones</th></tr>
           </thead>
           <tbody>
             ${this.data.ordenes.map(o => {
-              let badgeClass = o.estado === 'Recibida' ? 'badge-green' : (o.estado === 'Aprobada' ? 'badge-blue' : 'badge-gray');
-              const totalFmt = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(o.total);
+              const estColor = o.estado === 'Borrador' ? 'color:var(--gray-500)' : (o.estado === 'Enviada' ? 'color:var(--blue-600)' : 'color:var(--green-600)');
               return `
               <tr>
-                <td><strong>${o.numero}</strong></td>
                 <td>${o.fecha}</td>
-                <td>${o.tercero_nombre || '-'}</td>
-                <td><span class="nav-badge" style="padding:4px 8px; font-weight:normal; ${o.estado === 'Recibida' ? 'background:var(--green-600)' : 'background:var(--blue-600)'}">${o.estado}</span></td>
-                <td style="text-align:right; font-weight:600;">${totalFmt}</td>
+                <td><strong>${o.numero}</strong></td>
+                <td>${o.tercero_nombre}</td>
+                <td style="${estColor}; font-weight:bold;">${o.estado}</td>
+                <td>${new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(o.total || 0)}</td>
                 <td style="width:100px;">
-                  <button class="btn btn-sm btn-secondary" onclick='ModInventarios.verOrden(${JSON.stringify(o).replace(/'/g, "&apos;")})'>Ver</button>
+                  <button class="btn btn-sm" onclick='ModInventarios.openOrdenModal(${JSON.stringify(o).replace(/'/g, "&apos;")})'>✏️</button>
+                  <button class="btn btn-sm btn-secondary" onclick="window.open('/utcomexagro/admin/imprimir.php?tipo=orden&id=${o.id}', '_blank')" title="Imprimir">🖨️</button>
                 </td>
               </tr>
             `}).join('')}
@@ -492,8 +504,9 @@ const ModInventarios = {
     const modal = document.getElementById('modal-inv-orden');
     const itemsHtml = orden.items.map(i => {
       const vUnit = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.valor_unitario);
+      const vIva = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.iva_valor || 0);
       const vTot = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.valor_total);
-      return `<tr><td>${i.item_nombre}</td><td>${i.cantidad}</td><td>${vUnit}</td><td style="text-align:right">${vTot}</td></tr>`;
+      return `<tr><td>${i.item_nombre}</td><td>${i.cantidad}</td><td>${vUnit}</td><td>${i.iva_porcentaje || 0}% (${vIva})</td><td style="text-align:right">${vTot}</td></tr>`;
     }).join('');
     const totalFmt = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(orden.total);
 
@@ -510,11 +523,11 @@ const ModInventarios = {
             <div><strong>Estado:</strong> ${orden.estado}</div>
             <div><strong>Notas:</strong> ${orden.notas || '-'}</div>
           </div>
-          <table class="table" style="font-size:0.85rem;">
-            <thead><tr><th>Ítem</th><th>Cant.</th><th>V. Unit.</th><th style="text-align:right">Subtotal</th></tr></thead>
+          <table class="data-table" style="font-size:0.85rem;">
+            <thead><tr><th>Ítem</th><th>Cant.</th><th>V. Unit.</th><th>IVA</th><th style="text-align:right">Subtotal</th></tr></thead>
             <tbody>${itemsHtml}</tbody>
             <tfoot>
-              <tr><td colspan="3" style="text-align:right"><strong>TOTAL:</strong></td><td style="text-align:right; font-weight:bold; color:var(--emerald-700)">${totalFmt}</td></tr>
+              <tr><td colspan="4" style="text-align:right"><strong>TOTAL:</strong></td><td style="text-align:right; font-weight:bold; color:var(--emerald-700)">${totalFmt}</td></tr>
             </tfoot>
           </table>
         </div>
@@ -528,8 +541,8 @@ const ModInventarios = {
 
   openOrdenModal() {
     const modal = document.getElementById('modal-inv-orden');
-    const terOptions = this.data.terceros.map(t => `<option value="${t.id}">${t.nit} - ${t.nombre}</option>`).join('');
-    const itemOptions = this.data.items.map(i => `<option value="${i.id}">${i.nombre} (Unid: ${i.unidad})</option>`).join('');
+    const terOptions = this.data.terceros.map(t => `<option value="${t.id}">${t.numero_documento} - ${t.nombre_razon_social}</option>`).join('');
+    const itemOptions = this.data.items.map(i => `<option value="${i.id}" data-iva="${i.iva_porcentaje || 0}">${i.nombre} (Unid: ${i.unidad})</option>`).join('');
     
     // Generar numero orden OC-YMD-Random
     const d = new Date();
@@ -561,20 +574,25 @@ const ModInventarios = {
             <div class="form-group" style="grid-column: 1 / -1;">
               <label>Agregar Ítem</label>
               <div style="display:flex; gap:0.5rem; align-items:center;">
-                <select id="oc_item_add" class="form-control" style="flex:2"><option value="">Seleccione ítem...</option>${itemOptions}</select>
-                <input type="number" id="oc_cant_add" class="form-control" placeholder="Cant." style="width:100px;">
-                <input type="number" id="oc_vunit_add" class="form-control" placeholder="Valor Unit." style="width:150px;">
+                <select id="oc_item_add" class="form-control" style="flex:2" onchange="document.getElementById('oc_iva_add').value = this.options[this.selectedIndex].dataset.iva || 0"><option value="">Seleccione ítem...</option>${itemOptions}</select>
+                <input type="number" id="oc_cant_add" class="form-control" placeholder="Cant." style="width:80px;">
+                <input type="number" id="oc_vunit_add" class="form-control" placeholder="Valor Unit." style="width:130px;">
+                <select id="oc_iva_add" class="form-control" style="width:90px;">
+                  <option value="0">0% IVA</option>
+                  <option value="5">5% IVA</option>
+                  <option value="19">19% IVA</option>
+                </select>
                 <button type="button" class="btn btn-secondary" onclick="ModInventarios.addOrdenItemRow()">Añadir</button>
               </div>
             </div>
           </form>
           
-          <table class="table" style="margin-top:1rem; font-size:0.85rem;">
-            <thead><tr><th>Ítem</th><th>Cantidad</th><th>Valor Unit.</th><th>Subtotal</th><th></th></tr></thead>
+          <table class="data-table" style="margin-top:1rem; font-size:0.85rem;">
+            <thead><tr><th>Ítem</th><th>Cant.</th><th>V. Unit.</th><th>IVA</th><th>Subtotal</th><th></th></tr></thead>
             <tbody id="oc_items_body"></tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
+                <td colspan="4" style="text-align:right"><strong>Total:</strong></td>
                 <td colspan="2"><strong style="color:var(--emerald-700)" id="oc_total_label">$ 0</strong></td>
               </tr>
             </tfoot>
@@ -598,22 +616,31 @@ const ModInventarios = {
     const itemSelect = document.getElementById('oc_item_add');
     const cantInput = document.getElementById('oc_cant_add');
     const vUnitInput = document.getElementById('oc_vunit_add');
+    const ivaSelect = document.getElementById('oc_iva_add');
     
     if(!itemSelect.value || !cantInput.value || !vUnitInput.value) return Swal.fire('Error', 'Complete todos los datos del ítem', 'error');
     
     const itemName = itemSelect.options[itemSelect.selectedIndex].text;
-    const subtotal = parseFloat(cantInput.value) * parseFloat(vUnitInput.value);
+    const cant = parseFloat(cantInput.value);
+    const vUnit = parseFloat(vUnitInput.value);
+    const ivaPct = parseFloat(ivaSelect.value || 0);
+    
+    const baseSubtotal = cant * vUnit;
+    const ivaValor = baseSubtotal * (ivaPct / 100);
+    const subtotal = baseSubtotal + ivaValor;
     
     this.oc_items_temp.push({
       item_id: itemSelect.value,
       nombre: itemName,
-      cantidad: parseFloat(cantInput.value),
-      valor_unitario: parseFloat(vUnitInput.value),
+      cantidad: cant,
+      valor_unitario: vUnit,
+      iva_porcentaje: ivaPct,
+      iva_valor: ivaValor,
       valor_total: subtotal
     });
     
     this.renderOcItemsTemp();
-    itemSelect.value = ''; cantInput.value = ''; vUnitInput.value = '';
+    itemSelect.value = ''; cantInput.value = ''; vUnitInput.value = ''; ivaSelect.value = '0';
   },
 
   renderOcItemsTemp() {
@@ -622,7 +649,7 @@ const ModInventarios = {
     tbody.innerHTML = this.oc_items_temp.map((i, idx) => {
       total += i.valor_total;
       return `<tr>
-        <td>${i.nombre}</td><td>${i.cantidad}</td><td>$${i.valor_unitario}</td><td>$${i.valor_total}</td>
+        <td>${i.nombre}</td><td>${i.cantidad}</td><td>$${i.valor_unitario}</td><td>${i.iva_porcentaje}% ($${i.iva_valor})</td><td>$${i.valor_total}</td>
         <td><button type="button" class="btn btn-sm btn-secondary" onclick="ModInventarios.oc_items_temp.splice(${idx},1); ModInventarios.renderOcItemsTemp();">X</button></td>
       </tr>`;
     }).join('');
@@ -650,7 +677,24 @@ const ModInventarios = {
       document.getElementById('modal-inv-orden').classList.remove('open');
       await this.loadData();
       this.showTab('ordenes');
-      Swal.fire('Guardado', 'Orden creada con éxito', 'success');
+      
+      const newId = res.id || data.id;
+      if (newId) {
+        Swal.fire({
+          title: 'Orden Guardada',
+          text: '¿Desea imprimir la orden de compra ahora?',
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, imprimir',
+          cancelButtonText: 'No'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open('/utcomexagro/admin/imprimir.php?tipo=orden&id=' + newId, '_blank');
+          }
+        });
+      } else {
+        Swal.fire('Guardado', 'Orden registrada con éxito', 'success');
+      }
     } else {
       Swal.fire('Error', res.message, 'error');
     }
@@ -667,7 +711,7 @@ const ModInventarios = {
     if (filterType === 'entrada') { titulo = 'Entradas a Almacén'; btnText = '+ Nueva Entrada'; tipos = ['entrada']; }
     if (filterType === 'salida') { titulo = 'Salidas de Almacén'; btnText = '+ Nueva Salida'; tipos = ['salida']; }
 
-    const movs = this.data.movimientos.filter(m => tipos.includes(m.tipo));
+    const filtered = this.data.movimientos.filter(m => tipos.includes(m.tipo));
 
     let html = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -677,20 +721,23 @@ const ModInventarios = {
       <div class="table-responsive">
         <table class="data-table">
           <thead>
-            <tr><th>Fecha</th><th>Tipo</th><th>Ref / Comprobante</th><th>Tercero / Orden</th><th>Ítems Movidos</th><th>Observaciones</th></tr>
+            <tr><th>Fecha</th><th>Tipo</th><th>Ref / Comprobante</th><th>Tercero / Origen</th><th>Ítems Movidos</th><th>Observaciones</th><th>Imprimir</th></tr>
           </thead>
           <tbody>
-            ${movs.map(m => `
+            ${filtered.map(m => `
               <tr>
                 <td>${m.fecha}</td>
-                <td><span class="nav-badge" style="background:${m.tipo.includes('entrada') || m.tipo.includes('ingreso') ? 'var(--green-600)' : 'var(--red-600)'}">${m.tipo.toUpperCase()}</span></td>
+                <td><span class="badge ${m.tipo.includes('ingreso') || m.tipo==='entrada' ? 'badge-entrada' : 'badge-salida'}">${m.tipo.toUpperCase()}</span></td>
                 <td><strong>${m.comprobante_ref || '-'}</strong></td>
-                <td>${m.tercero_nombre || m.orden_numero || '-'}</td>
-                <td>${m.items.length} ítems</td>
-                <td><small>${m.observaciones || '-'}</small></td>
+                <td>${m.tercero_nombre || '-'}</td>
+                <td>${m.items ? m.items.length : 0} ítems</td>
+                <td>${m.observaciones || '-'}</td>
+                <td style="width:60px; text-align:center;">
+                  <button class="btn btn-sm btn-secondary" onclick="window.open('/utcomexagro/admin/imprimir.php?tipo=movimiento&id=${m.id}', '_blank')" title="Imprimir">🖨️</button>
+                </td>
               </tr>
             `).join('')}
-            ${!movs.length ? `<tr><td colspan="6" class="text-center">No hay registros de ${filterType}</td></tr>` : ''}
+            ${!filtered.length ? `<tr><td colspan="7" class="text-center">No hay registros de ${filterType}</td></tr>` : ''}
           </tbody>
         </table>
       </div>
@@ -700,8 +747,8 @@ const ModInventarios = {
 
   openMovimientoModal(filterType) {
     const modal = document.getElementById('modal-inv-movimiento');
-    const terOptions = this.data.terceros.map(t => `<option value="${t.id}">${t.nit} - ${t.nombre}</option>`).join('');
-    const itemOptions = this.data.items.map(i => `<option value="${i.id}">${i.nombre} (Stock: ${i.cantidad})</option>`).join('');
+    const terOptions = this.data.terceros.map(t => `<option value="${t.id}">${t.numero_documento} - ${t.nombre_razon_social}</option>`).join('');
+    const itemOptions = this.data.items.map(i => `<option value="${i.id}" data-iva="${i.iva_porcentaje || 0}" data-costo="${i.costo_promedio || 0}">${i.nombre} (Stock: ${i.cantidad})</option>`).join('');
     const ocOptions = this.data.ordenes.filter(o => o.estado !== 'Recibida').map(o => `<option value="${o.id}">${o.numero} - ${o.tercero_nombre}</option>`).join('');
     
     const d = new Date();
@@ -756,15 +803,21 @@ const ModInventarios = {
             <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
               <label style="color:var(--emerald-700)">Ítems del Movimiento</label>
               <div style="display:flex; gap:0.5rem; align-items:center;">
-                <select id="mov_item_add" class="form-control" style="flex:2"><option value="">Seleccione ítem...</option>${itemOptions}</select>
-                <input type="number" id="mov_cant_add" class="form-control" placeholder="Cant." style="width:120px;">
+                <select id="mov_item_add" class="form-control" style="flex:2" onchange="ModInventarios.autoFillMovItem(this)"><option value="">Seleccione ítem...</option>${itemOptions}</select>
+                <input type="number" id="mov_cant_add" class="form-control" placeholder="Cant." style="width:80px;">
+                <input type="number" id="mov_costo_add" class="form-control" placeholder="Costo Unit." style="width:120px;" ${filterType === 'salida' ? 'disabled title="El sistema asigna el costo promedio automáticamente en salidas"' : ''}>
+                <select id="mov_iva_add" class="form-control" style="width:90px;" ${filterType === 'salida' ? 'disabled' : ''}>
+                  <option value="0">0% IVA</option>
+                  <option value="5">5% IVA</option>
+                  <option value="19">19% IVA</option>
+                </select>
                 <button type="button" class="btn btn-secondary" onclick="ModInventarios.addMovItemRow()">Añadir a lista</button>
               </div>
             </div>
           </form>
           
-          <table class="table" style="margin-top:0.5rem; font-size:0.85rem;">
-            <thead><tr><th>Ítem</th><th>Cantidad</th><th></th></tr></thead>
+          <table class="data-table" style="margin-top:0.5rem; font-size:0.85rem;">
+            <thead><tr><th>Ítem</th><th>Cant.</th><th>Costo Unit.</th><th>IVA</th><th>Subtotal</th><th></th></tr></thead>
             <tbody id="mov_items_body"></tbody>
           </table>
           
@@ -783,6 +836,18 @@ const ModInventarios = {
     this.mov_items_temp = [];
   },
 
+  autoFillMovItem(select) {
+    if (!select.value) return;
+    const option = select.options[select.selectedIndex];
+    const ivaEl = document.getElementById('mov_iva_add');
+    const costoEl = document.getElementById('mov_costo_add');
+    
+    if(ivaEl && !ivaEl.disabled) ivaEl.value = option.dataset.iva || 0;
+    
+    // For salidas, the input is disabled, but we want to show the user the CPP it will use
+    if(costoEl && costoEl.disabled) costoEl.value = option.dataset.costo || 0;
+  },
+
   cargarItemsDeOrden(orden_id) {
     if(!orden_id) {
       this.mov_items_temp = [];
@@ -798,7 +863,9 @@ const ModInventarios = {
         item_id: i.item_id,
         nombre: i.item_nombre,
         cantidad: i.cantidad,
-        costo_unitario: i.valor_unitario
+        costo_unitario: i.valor_unitario,
+        iva_porcentaje: parseFloat(i.iva_porcentaje || 0),
+        iva_valor: parseFloat(i.iva_valor || 0)
       }));
       this.renderMovItemsTemp();
     }
@@ -807,27 +874,46 @@ const ModInventarios = {
   addMovItemRow() {
     const itemSelect = document.getElementById('mov_item_add');
     const cantInput = document.getElementById('mov_cant_add');
+    const costoInput = document.getElementById('mov_costo_add');
+    const ivaSelect = document.getElementById('mov_iva_add');
     
     if(!itemSelect.value || !cantInput.value) return Swal.fire('Error', 'Seleccione un ítem y cantidad', 'error');
+    
+    const cant = parseFloat(cantInput.value);
+    const costo = costoInput ? (parseFloat(costoInput.value) || 0) : 0;
+    const ivaPct = ivaSelect ? (parseFloat(ivaSelect.value) || 0) : 0;
+    
+    const baseSubtotal = cant * costo;
+    const ivaValor = baseSubtotal * (ivaPct / 100);
     
     this.mov_items_temp.push({
       item_id: itemSelect.value,
       nombre: itemSelect.options[itemSelect.selectedIndex].text,
-      cantidad: parseFloat(cantInput.value)
+      cantidad: cant,
+      costo_unitario: costo,
+      iva_porcentaje: ivaPct,
+      iva_valor: ivaValor
     });
     
     this.renderMovItemsTemp();
-    itemSelect.value = ''; cantInput.value = '';
+    itemSelect.value = ''; cantInput.value = ''; 
+    if(costoInput) costoInput.value = '';
+    if(ivaSelect) ivaSelect.value = '0';
   },
 
   renderMovItemsTemp() {
     const tbody = document.getElementById('mov_items_body');
-    tbody.innerHTML = this.mov_items_temp.map((i, idx) => `
-      <tr>
-        <td>${i.nombre}</td><td>${i.cantidad}</td>
+    tbody.innerHTML = this.mov_items_temp.map((i, idx) => {
+      const vUnit = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.costo_unitario || 0);
+      const vIva = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(i.iva_valor || 0);
+      const subtotal = (i.cantidad * (i.costo_unitario || 0)) + (i.iva_valor || 0);
+      const vTot = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP'}).format(subtotal);
+      
+      return `<tr>
+        <td>${i.nombre}</td><td>${i.cantidad}</td><td>${vUnit}</td><td>${i.iva_porcentaje || 0}% (${vIva})</td><td>${vTot}</td>
         <td style="text-align:right"><button type="button" class="btn btn-sm btn-secondary" onclick="ModInventarios.mov_items_temp.splice(${idx},1); ModInventarios.renderMovItemsTemp();">X</button></td>
-      </tr>
-    `).join('');
+      </tr>`;
+    }).join('');
   },
 
   async saveMovimiento(tab) {
@@ -849,8 +935,29 @@ const ModInventarios = {
     if(res.success) {
       document.getElementById('modal-inv-movimiento').classList.remove('open');
       await this.loadData();
-      this.showTab(tab);
-      Swal.fire('Éxito', 'Movimiento registrado. El stock ha sido actualizado.', 'success');
+      
+      let nextTab = 'ajustes';
+      if(tab === 'entrada') nextTab = 'entradas';
+      if(tab === 'salida') nextTab = 'salidas';
+      
+      this.showTab(nextTab);
+      
+      if (res.id) {
+        Swal.fire({
+          title: 'Movimiento Exitoso',
+          text: 'Se ha registrado el movimiento. ¿Desea imprimir el soporte?',
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, imprimir',
+          cancelButtonText: 'No'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open('/utcomexagro/admin/imprimir.php?tipo=movimiento&id=' + res.id, '_blank');
+          }
+        });
+      } else {
+        Swal.fire('Éxito', 'Movimiento registrado. El stock ha sido actualizado.', 'success');
+      }
     } else {
       Swal.fire('Error', res.message, 'error');
     }

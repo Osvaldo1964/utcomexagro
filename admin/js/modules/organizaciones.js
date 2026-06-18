@@ -124,9 +124,14 @@ async function abrirModalOrganizacion(org = null) {
   showModal(title, '<div style="text-align:center;padding:2rem"><div class="spinner-inline"></div> Cargando formulario...</div>', '', true);
 
   let tiposPoblacion = [];
+  let tiposOrganizacion = [];
   try {
-    const resP = await API.get('/beneficiarios/poblacion_tipos.php');
+    const [resP, resT] = await Promise.all([
+      API.get('/beneficiarios/poblacion_tipos.php'),
+      API.get('/beneficiarios/tipos.php')
+    ]);
     if (resP.success) tiposPoblacion = resP.data;
+    if (resT.success) tiposOrganizacion = resT.data;
   } catch(e) {}
 
   const formHtml = `
@@ -142,7 +147,14 @@ async function abrirModalOrganizacion(org = null) {
         </div>
         
         <div class="form-group">
-          <label class="form-label">Tipo de Población (Enfoque)</label>
+          <label class="form-label">Tipo de Organización *</label>
+          <select id="org-tipo" class="form-control" required>
+            <option value="">-- Seleccionar Tipo --</option>
+            ${tiposOrganizacion.map(t => `<option value="${t.id}" ${org?.tipo_id == t.id ? 'selected' : ''}>${t.nombre}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Población / Enfoque</label>
           <select id="org-poblacion" class="form-control">
             <option value="">-- No aplica / Ninguno --</option>
             ${tiposPoblacion.map(t => `<option value="${t.id}" ${org?.poblacion_tipo_id == t.id ? 'selected' : ''}>${t.nombre}</option>`).join('')}
@@ -223,6 +235,11 @@ async function guardarOrganizacion(e, id) {
   fd.append('nit', document.getElementById('org-nit').value);
   fd.append('nombre', document.getElementById('org-nombre').value);
   
+  const tipoEl = document.getElementById('org-tipo');
+  if (tipoEl && tipoEl.value) {
+    fd.append('tipo_id', tipoEl.value);
+  }
+
   const poblacionEl = document.getElementById('org-poblacion');
   if (poblacionEl && poblacionEl.value) {
     fd.append('poblacion_tipo_id', poblacionEl.value);

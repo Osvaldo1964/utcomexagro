@@ -504,15 +504,19 @@ function updateBreadcrumb(pathArray) {
     }
 
     const span = document.createElement('span');
-    if (item.key && index < pathArray.length - 1) {
+    if ((item.key || item.action) && index < pathArray.length - 1) {
       span.className = 'breadcrumb-item';
       span.textContent = item.label;
       span.title = `Ir a ${item.label === '🏠' ? 'Inicio' : item.label}`;
       span.addEventListener('click', () => {
-        if (window.location.hash === '#' + item.key) {
-          navigateTo(item.key);
+        if (item.action) {
+          item.action();
         } else {
-          window.location.hash = item.key;
+          if (window.location.hash === '#' + item.key) {
+            navigateTo(item.key);
+          } else {
+            window.location.hash = item.key;
+          }
         }
       });
     } else {
@@ -551,4 +555,26 @@ window.switchTab = function(el, targetId) {
   
   // Mark active
   el.classList.add('active');
+};// ================================================================
+//  GLOBAL PRINT FUNCTION
+// ================================================================
+window.printHTML = function(html) {
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  document.body.appendChild(iframe);
+  iframe.contentWindow.document.open();
+  iframe.contentWindow.document.write(html);
+  iframe.contentWindow.document.close();
+  setTimeout(() => {
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 10000); // 10s is safe enough for the print dialog to close
+  }, 250);
 };

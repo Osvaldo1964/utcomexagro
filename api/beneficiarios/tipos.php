@@ -22,9 +22,12 @@ if ($method === 'GET') {
     
     // Obtener los tipos con el conteo de organizaciones asociadas
     $stmt = $pdo->query("
-        SELECT t.*, COUNT(o.id) AS total_organizaciones
+        SELECT t.*, 
+               COUNT(DISTINCT o.id) AS total_organizaciones,
+               COUNT(DISTINCT b.id) AS total_beneficiarios
         FROM tipos_organizacion t
         LEFT JOIN organizaciones o ON t.id = o.tipo_id
+        LEFT JOIN beneficiarios b ON o.id = b.organizacion_id AND b.estado = 'activo'
         GROUP BY t.id
         ORDER BY t.nombre ASC
     ");

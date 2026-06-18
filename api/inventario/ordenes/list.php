@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../config/db.php';
 $pdo = Database::getConnection();
 header("Content-Type: application/json");
 try {
-    $stmt = $pdo->query("SELECT o.*, t.nombre as tercero_nombre, t.nit as tercero_nit FROM inv_ordenes_compra o LEFT JOIN terceros t ON o.tercero_id = t.id ORDER BY o.fecha DESC, o.id DESC");
+    $stmt = $pdo->query("SELECT o.*, t.nombre_razon_social as tercero_nombre, t.numero_documento as tercero_nit FROM inv_ordenes_compra o LEFT JOIN terceros t ON o.tercero_id = t.id ORDER BY o.fecha DESC, o.id DESC");
     $ordenes = $stmt->fetchAll();
     
     foreach ($ordenes as &$orden) {

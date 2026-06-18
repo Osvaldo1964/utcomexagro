@@ -15,9 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     
     // Listar tipos de población contando cuántas organizaciones lo usan
     $stmt = $pdo->query("
-        SELECT pt.*, COUNT(o.id) as total_organizaciones 
+        SELECT pt.*, 
+               COUNT(DISTINCT o.id) as total_organizaciones,
+               COUNT(DISTINCT b.id) as total_beneficiarios
         FROM poblacion_tipos pt 
         LEFT JOIN organizaciones o ON pt.id = o.poblacion_tipo_id 
+        LEFT JOIN beneficiarios b ON o.id = b.organizacion_id AND b.estado = 'activo'
         GROUP BY pt.id 
         ORDER BY pt.nombre ASC
     ");
