@@ -475,11 +475,12 @@ function exportarBenBeneficiariosPDF(data) {
 // FUNCIÓN UTILITARIA (Plantilla Base PDF)
 // ==========================================
 function generarPDFBase(titulo, colorBase, theadHtml, tbodyHtml) {
+  const windowTitle = titulo.replace(/<[^>]*>?/gm, '');
   const todayStr = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' });
   const html = `
     <html>
       <head>
-        <title>${titulo}</title>
+        <title>${windowTitle}</title>
         <style>
           body { font-family: 'Helvetica', sans-serif; padding: 10px; color: #333; font-size:8px; }
           .header { text-align: center; margin-bottom: 10px; border-bottom: 2px solid ${colorBase}; padding-bottom: 5px; }
