@@ -26,7 +26,7 @@ window.generarInformeContratacionCargos = async function() {
     Swal.fire({ title: 'Generando Reporte...', text: 'Obteniendo cargos', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
     const res = await API.get('/cargos/list.php');
-    if (!res.success) throw new Error();
+    if (!res.success) throw new Error(res.message || 'Error del servidor');
 
     const list = res.data;
     Swal.close();
@@ -93,7 +93,7 @@ window.generarInformeContratacionCargos = async function() {
     printHTML(html);
 
   } catch(e) {
-    Swal.fire('Error', 'No se pudo generar el reporte.', 'error');
+    Swal.fire('Error', e.message || 'No se pudo generar el reporte.', 'error');
   }
 };
 
@@ -120,7 +120,7 @@ window.generarInformeContratacionEmpleados = async function() {
     Swal.fire({ title: 'Generando Reporte...', text: 'Obteniendo personal', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
     const res = await API.get('/empleados/list.php');
-    if (!res.success) throw new Error();
+    if (!res.success) throw new Error(res.message || 'Error del servidor');
 
     const list = res.data;
     Swal.close();
@@ -209,7 +209,7 @@ window.generarInformeContratacionEmpleados = async function() {
     printHTML(html);
 
   } catch(e) {
-    Swal.fire('Error', 'No se pudo generar el reporte.', 'error');
+    Swal.fire('Error', e.message || 'No se pudo generar el reporte.', 'error');
   }
 };
 
@@ -250,7 +250,7 @@ window.generarInformeContratacionNomina = async function() {
     Swal.fire({ title: 'Generando Nómina...', text: 'Calculando salarios base', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
     const res = await API.get('/empleados/list.php');
-    if (!res.success) throw new Error();
+    if (!res.success) throw new Error(res.message || 'Error del servidor');
 
     const list = res.data;
     Swal.close();
@@ -340,6 +340,6 @@ window.generarInformeContratacionNomina = async function() {
     printHTML(html);
 
   } catch(e) {
-    Swal.fire('Error', 'No se pudo generar la nómina.', 'error');
+    Swal.fire('Error', e.message || 'No se pudo generar la nómina.', 'error');
   }
 };
