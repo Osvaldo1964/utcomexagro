@@ -310,6 +310,54 @@ function renderInformes() {
             </div>
           </div>
         `;
+      } else if (mod.key === 'contratacion') {
+        innerContent = `
+          <div class="modules-grid" style="margin-top: 1rem;">
+            
+            <div class="module-card" onclick="abrirModalReporteContratacionCargos()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#dbeafe;color:#2563eb">📇</div>
+                <div>
+                  <div class="module-name">Catálogo de Cargos</div>
+                  <span class="badge" style="background:#dbeafe;color:#2563eb">Referencia</span>
+                </div>
+              </div>
+              <div class="module-desc">Listado maestro de los cargos disponibles en la UT, sus perfiles requeridos y descripciones.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteContratacionEmpleados()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#dcfce7;color:#16a34a">🧑‍💼</div>
+                <div>
+                  <div class="module-name">Listado de Empleados</div>
+                  <span class="badge" style="background:#dcfce7;color:#16a34a">Activos</span>
+                </div>
+              </div>
+              <div class="module-desc">Directorio de personal contratado, organizado por cargo, con fechas de inicio e información de contacto.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+            <div class="module-card" onclick="abrirModalReporteContratacionNomina()">
+              <div class="module-card-header">
+                <div class="module-icon" style="background:#fef3c7;color:#d97706">💵</div>
+                <div>
+                  <div class="module-name">Impresión de Nómina</div>
+                  <span class="badge" style="background:#fef3c7;color:#d97706">Financiero</span>
+                </div>
+              </div>
+              <div class="module-desc">Sábana de pago detallada por empleado, con salarios base y espacios para devengados/deducciones.</div>
+              <div class="module-card-footer">
+                <span class="module-link">Generar Reporte <span class="module-link-arrow">›</span></span>
+              </div>
+            </div>
+
+          </div>
+        `;
       } else {
         innerContent = `
           <div style="text-align: center; padding: 4rem 2rem; background: var(--gray-50); border-radius: 8px; border: 1px dashed var(--gray-300);">
