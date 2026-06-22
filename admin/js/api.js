@@ -91,6 +91,21 @@ const API = (() => {
       get:  ()   => get('/config/parametros.php'),
       save: (fd) => post('/config/parametros.php', fd),
     },
+    parametrosNomina: {
+      list: ()   => get('/config/parametros_nomina.php'),
+      save: (fd) => post('/config/parametros_nomina.php', fd),
+    },
+    contratos: {
+      list: () => get('/contratacion/postulados_seleccionados.php'),
+      generar: (fd) => post('/contratacion/generar_contrato.php', fd)
+    }
+  };
+
+  const contratacion = {
+    conceptosNomina: {
+      list: ()   => get('/contratacion/conceptos_nomina.php'),
+      save: (fd) => post('/contratacion/conceptos_nomina.php', fd),
+    }
   };
 
   const beneficiarios = {
@@ -114,5 +129,12 @@ const API = (() => {
     stats: () => get('/dashboard/stats.php'),
   };
 
-  return { request, get, post, put, del, postulados, configuracion, beneficiarios, dashboard };
+  const capacitaciones = {
+    list:   ()   => get('/capacitaciones/list.php'),
+    save:   (fd) => post('/capacitaciones/save.php', fd),
+    state:  (fd) => post('/capacitaciones/state.php', fd),
+    delete: (fd) => post('/capacitaciones/delete.php', fd),
+  };
+
+  return { request, get, post, put, del, postulados, configuracion, contratacion, beneficiarios, capacitaciones, dashboard };
 })();

@@ -36,6 +36,14 @@ function renderConfiguracion() {
           <div class="module-desc">Información de la empresa operadora: NIT, nombre, representante legal y datos de contacto.</div>
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
+        <div class="module-card" onclick="loadParametrosNomina()">
+          <div class="module-card-header">
+            <div class="module-icon icon-config">💵</div>
+            <div><div class="module-name">Parámetros de Nómina</div><span class="badge badge-active">Activo</span></div>
+          </div>
+          <div class="module-desc">Configuración de valores legales anuales para cálculos de nómina.</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
+        </div>
       </div>
     </div>
   `;
@@ -585,5 +593,165 @@ async function guardarPermisosRol(rolId) {
     }
   } catch (err) {
     showToastAdmin('Error al guardar los permisos.', 'error');
+  }
+}
+
+// ================================================================
+//  GESTIÓN DE PARÁMETROS DE NÓMINA (CONFIGURACIÓN)
+// ================================================================
+async function loadParametrosNomina() {
+  updateBreadcrumb([
+    { label: '🏠', key: 'dashboard' },
+    { label: 'Configuración', key: 'configuracion' },
+    { label: 'Parámetros de Nómina' }
+  ]);
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="module-page">
+      <div class="module-page-header">
+        <div>
+          <div class="module-page-title">💵 Parámetros de Nómina</div>
+          <p style="color:var(--gray-400);font-size:0.85rem;margin-top:5px;">Configuración de valores legales anuales para cálculos de nómina.</p>
+        </div>
+        <div class="module-page-actions">
+          <button class="btn btn-primary btn-sm" onclick="abrirModalParametroNomina()">➕ Nuevo Año</button>
+          <button class="btn btn-secondary btn-sm" onclick="navigateTo('configuracion')">↩️ Volver</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>AÑO</th>
+                <th>SALARIO MÍNIMO (SMLV)</th>
+                <th>AUXILIO TRANSPORTE</th>
+                <th>EXONERACIÓN LEY 1819</th>
+                <th>ESTADO</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody id="param-nomina-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-400)">
+                <div class="spinner-inline"></div> Cargando parámetros...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const res = await API.configuracion.parametrosNomina.list();
+    if (res.success) {
+      window.allParametrosNomina = res.data;
+      renderParametrosNominaTable(res.data);
+    } else {
+      document.getElementById('param-nomina-tbody').innerHTML = 
+        `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--danger)">Error al cargar datos.</td></tr>`;
+    }
+  } catch (err) {
+    document.getElementById('param-nomina-tbody').innerHTML = 
+      `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--danger)">Error de conexión con el servidor.</td></tr>`;
+  }
+}
+
+function renderParametrosNominaTable(data) {
+  const tbody = document.getElementById('param-nomina-tbody');
+  if (!tbody) return;
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-400)">No hay parámetros registrados.</td></tr>`;
+    return;
+  }
+
+  const fmtMoneda = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' });
+
+  tbody.innerHTML = data.map(p => {
+    const estadoBadge = p.estado == 1 ? '<span class="badge badge-aplica">Activo</span>' : '<span class="badge badge-no_aplica">Inactivo</span>';
+    const exBadge = p.aplica_exoneracion == 1 ? '<span style="color:#16a34a;font-weight:bold">Sí</span>' : '<span style="color:var(--gray-500)">No</span>';
+    
+    return `
+      <tr>
+        <td><strong>${p.anio}</strong></td>
+        <td>${fmtMoneda.format(p.salario_minimo)}</td>
+        <td>${fmtMoneda.format(p.auxilio_transporte)}</td>
+        <td>${exBadge}</td>
+        <td>${estadoBadge}</td>
+        <td>
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="abrirModalParametroNomina(${p.id})" title="Editar Parámetro">
+            ✏️
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function abrirModalParametroNomina(id = null) {
+  let param = { anio: new Date().getFullYear(), salario_minimo: '', auxilio_transporte: '', aplica_exoneracion: 1, estado: 1 };
+  if (id) {
+    param = window.allParametrosNomina.find(p => p.id == id) || param;
+  }
+
+  const title = id ? 'Editar Parámetros Anuales' : 'Nuevos Parámetros Anuales';
+  
+  showModal(title, `
+    <form id="form-param-nomina" onsubmit="guardarParametroNomina(event, ${id || 'null'})" style="display:flex;flex-direction:column;gap:1rem">
+      <div class="form-group">
+        <label class="form-label" for="pn-anio">AÑO</label>
+        <input type="number" class="form-control" id="pn-anio" required value="${param.anio}" ${id ? 'readonly style="background:var(--gray-800)"' : ''}>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pn-smlv">SALARIO MÍNIMO (SMLV)</label>
+        <input type="number" step="0.01" class="form-control" id="pn-smlv" required placeholder="Ej: 1300000" value="${param.salario_minimo}">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pn-aux">AUXILIO TRANSPORTE</label>
+        <input type="number" step="0.01" class="form-control" id="pn-aux" required placeholder="Ej: 162000" value="${param.auxilio_transporte}">
+      </div>
+      <div class="remember-wrap" style="color:var(--white);margin-top:.5rem;align-items:flex-start">
+        <input type="checkbox" id="pn-exo" ${param.aplica_exoneracion == 1 ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--green-500);margin-top:3px">
+        <div>
+          <label for="pn-exo" style="cursor:pointer;font-weight:bold;font-size:.85rem">¿APLICA EXONERACIÓN LEY 1819?</label>
+          <div style="font-size:.75rem;color:var(--gray-400);margin-top:2px;">Exime de aportes patronales a Salud (8.5%), SENA (2%) e ICBF (3%)</div>
+        </div>
+      </div>
+      <div class="remember-wrap" style="color:var(--white);margin-top:.5rem">
+        <input type="checkbox" id="pn-estado" ${param.estado == 1 ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--green-500)">
+        <label for="pn-estado" style="cursor:pointer;font-size:.85rem">Parámetro Activo</label>
+      </div>
+      <button type="submit" style="display:none;" id="btn-submit-pn-hidden"></button>
+    </form>
+  `, `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="document.getElementById('btn-submit-pn-hidden').click()">Guardar</button>
+  `);
+}
+
+async function guardarParametroNomina(event, id) {
+  event.preventDefault();
+  
+  const fd = new FormData();
+  if (id) fd.append('id', id);
+  fd.append('anio', document.getElementById('pn-anio').value);
+  fd.append('salario_minimo', document.getElementById('pn-smlv').value);
+  fd.append('auxilio_transporte', document.getElementById('pn-aux').value);
+  fd.append('aplica_exoneracion', document.getElementById('pn-exo').checked ? 1 : 0);
+  fd.append('estado', document.getElementById('pn-estado').checked ? 1 : 0);
+
+  try {
+    const res = await API.configuracion.parametrosNomina.save(fd);
+    if (res.success) {
+      showToastAdmin(res.message);
+      closeModal();
+      loadParametrosNomina();
+    } else {
+      showToastAdmin(res.message, 'error');
+    }
+  } catch (err) {
+    showToastAdmin('Error al guardar.', 'error');
   }
 }

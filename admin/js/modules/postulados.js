@@ -317,6 +317,14 @@ function renderContratacion() {
           <div class="module-desc">Generar contratos y registrar empleados a partir de seleccionados.</div>
           <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
         </div>
+        <div class="module-card" onclick="renderConceptosNomina()">
+          <div class="module-card-header">
+            <div class="module-icon icon-config">🏷️</div>
+            <div><div class="module-name">Conceptos de Nómina</div><span class="badge badge-active">Activo</span></div>
+          </div>
+          <div class="module-desc">Gestión de tipos de pagos (devengados) y descuentos (deducciones).</div>
+          <div class="module-card-footer"><span class="module-link">Gestionar <span class="module-link-arrow">›</span></span></div>
+        </div>
         <div class="module-card" onclick="alert('Próximamente')">
           <div class="module-card-header">
             <div class="module-icon icon-budget">💵</div>

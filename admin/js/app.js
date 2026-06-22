@@ -228,6 +228,7 @@ function navigateTo(moduleKey) {
       case 'presupuesto_traslados': renderPresupuestoTraslados(); break;
       case 'informes':      renderInformes(); break;
       case 'inventarios':   ModInventarios.init(); break;
+      case 'capacitaciones':renderCapacitaciones(); break;
       default:              const mod = MODULES.find(m => m.key === moduleKey); renderComingSoon(mod); break;
     }
   }, 300);
